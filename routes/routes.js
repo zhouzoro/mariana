@@ -19,7 +19,7 @@ io.on('connection', function(socket) {
 
 var winston = require('winston');
 winston.add(winston.transports.File, {
-    filename: '../mariana-lib/mariana-logs.log',
+    filename: '../lib/mariana-logs.log',
     handleExceptions: true,
     humanReadableUnhandledException: true
 });
@@ -279,7 +279,7 @@ module.exports.showUpload = function(db) {
 module.exports.addNewPost = function(db) {
     return function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
-        var cdir = '../mariana-lib/' + req.cookies.uploadType + '/upload_' + DatetimeDashMin() + '/';
+        var cdir = '../lib/' + req.cookies.uploadType + '/upload_' + DatetimeDashMin() + '/';
         if (!fs.existsSync(cdir)) {
             fs.mkdirsSync(cdir);
         }

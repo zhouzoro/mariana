@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({
 //serve static files:
 app.use('/scripts', express.static('scripts'));
 app.use('/styles', express.static('styles'));
-app.use('/lib', express.static('../mariana-lib'));
+app.use('/lib', express.static('../lib'));
 //connect to mongodb, and stay connected ever since.
 MongoClient.connect(url, function(err, db) {
     if (err) {

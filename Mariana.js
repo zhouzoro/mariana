@@ -8,195 +8,223 @@ var port = process.env.PORT || 80;
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 
+var fs = require('fs-extra');
 var path = require('path');
 
-var fs = require('fs-extra');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 var url = 'mongodb://127.0.0.1:27017/test';
-var socketioPort = 30000;
 var coll_name = 'mariana';
-var jade = require('jade');
+
 var formidable = require('formidable');
 var util = require('util');
-var io = require('socket.io')(socketioPort);
 
+var jade = require('jade');
 var details = jade.compileFile('./views/details.jade');
+
+var io = require('socket.io')(socketioPort);
+var socketioPort = 30000;
+
 io.on('connection', function(socket) {
-    console.log('CONNECTED');
+    winston.info('CONNECTED');
     socket.join('sessionId');
 });
 
+var winston = require('winston');
+winston.add(winston.transports.File, {
+    filename: '../mariana-lib/mariana-logs.log',
+    handleExceptions: true,
+    humanReadableUnhandledException: true
+});
+//set views and view engine;
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+//serve static files:
+app.use('/scripts', express.static('scripts'));
+app.use('/styles', express.static('styles'));
+app.use('/lib', express.static('../mariana-lib'));
 //connect to mongodb, and stay connected ever since.
 MongoClient.connect(url, function(err, db) {
     if (err) {
-        console.log(err);
+        winston.info(GetCurrentDatetime(), err);
     }
     /**function to gather info from db and then render the home page;
      * takes No param, ends with res.render.
      */
     var showHome = function(req, res) {
-        var posts = db.collection(coll_name);
-        posts.find({
-            type: 'news'
-        }).limit(6).sort([
-            ['date', -1]
-        ]).toArray(function(err, news) {
-            if (err) {
-                console.log(err);
-            }
+            winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
+            var posts = db.collection(coll_name);
             posts.find({
-                type: 'mtin'
+                type: 'news'
             }).limit(6).sort([
                 ['date', -1]
-            ]).toArray(function(err, mtin) {
+            ]).toArray(function(err, news) {
                 if (err) {
-                    console.log(err);
-
-                    return;
+                    winston.error(GetCurrentDatetime(), err);
                 }
                 posts.find({
-                    type: 'data'
+                    type: 'mtin'
                 }).limit(6).sort([
                     ['date', -1]
-                ]).toArray(function(err, data) {
+                ]).toArray(function(err, mtin) {
                     if (err) {
-                        console.log(err);
+                        winston.error(GetCurrentDatetime(), err);
 
                         return;
                     }
-                    res.render('home', {
-                        news: news,
-                        mtin: mtin,
-                        data: data
+                    posts.find({
+                        type: 'data'
+                    }).limit(6).sort([
+                        ['date', -1]
+                    ]).toArray(function(err, data) {
+                        if (err) {
+                            winston.error(GetCurrentDatetime(), err);
+
+                            return;
+                        }
+                        res.render('home', {
+                            news: news,
+                            mtin: mtin,
+                            data: data
+                        });
+
+                    })
+                })
+            })
+        }
+        /**
+         * [function to get certain type of record from mongodb]
+         * @param {[object]} req [includes query containing record type(req.query.rtype), whitch page(req.query.cnum) and how many(req.query.numpp) records to be extracted.]
+         * @param {[object]} res [render certain type of view to the client]
+         */
+    var setRecords = function(req, res) {
+            winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
+            var type = req.query.rtype; //record type
+            var cnum = parseInt(req.query.cnum); //whitch page of record
+            var numpp = parseInt(req.query.numpp); //how many record per page.
+            var posts = db.collection(coll_name);
+            var sorter = 'date'; //the field to sort the query result, default as date
+            var sor = -1; //the sort order, default as date descend.
+
+            //if record is reference(dissertation), order by sequence.
+            if (type === 'refe') {
+                sorter = 'serl';
+                sor = 1;
+                numpp = 999;
+            }
+            //do the query:
+            posts.find({
+                type: type
+            }).skip(cnum * numpp).limit(numpp).sort([
+                [sorter, sor]
+            ]).toArray(function(err, data) {
+                if (err) {
+                    winston.error(GetCurrentDatetime(), err);
+
+                    return;
+                }
+                posts.count({
+                    type: type
+                }, function(err, count) {
+                    var tnum = Math.ceil(count / numpp);
+                    //pass a page number infomation to the page, prepare for future query.
+                    var pnum = {
+                        type: type,
+                        cnum: cnum,
+                        tnum: tnum,
+                        numpp: numpp
+                    };
+
+                    res.render(type, {
+                        data: data,
+                        pnum: pnum
                     });
 
                 })
             })
-        })
-    }
-    /**
-     * [function to get certain type of record from mongodb]
-     * @param {[object]} req [includes query containing record type(req.query.rtype), whitch page(req.query.cnum) and how many(req.query.numpp) records to be extracted.]
-     * @param {[object]} res [render certain type of view to the client]
-     */
-    var setRecords = function(req, res) {
-        var type = req.query.rtype;//record type
-        var cnum = parseInt(req.query.cnum);//whitch page of record
-        var numpp = parseInt(req.query.numpp);//how many record per page.
-        var posts = db.collection(coll_name);
-        var sorter = 'date';//the field to sort the query result, default as date
-        var sor = -1;//the sort order, default as date descend.
-
-        //if record is reference(dissertation), order by sequence.
-        if (type === 'refe') {
-            sorter = 'serl';
-            sor = 1;
-            numpp = 999;
         }
-        //do the query:
-        posts.find({
-            type: type
-        }).skip(cnum * numpp).limit(numpp).sort([
-            [sorter, sor]
-        ]).toArray(function(err, data) {
-            if (err) {
-                console.log(err);
-
+        /**
+         * [show a detailed view of a record]
+         * @param  {[type]} req [record ID(req.query._id), can be converted to ObjectID in mongodb]
+         * @param  {[type]} res [if a record of certain id is found, render the details, else redirect home]
+         */
+    var showDetails = function(req, res) {
+            winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
+            var posts = db.collection(coll_name);
+            try {
+                var id = require('mongodb').ObjectID(req.query._id.substr(1, 24));
+            } catch (err) {
+                winston.error(GetCurrentDatetime(), err);
                 return;
             }
-            posts.count({
-                type: type
-            }, function(err, count) {
-                var tnum = Math.ceil(count / numpp);
-                //pass a page number infomation to the page, prepare for future query.
-                var pnum = {
-                    type: type,
-                    cnum: cnum,
-                    tnum: tnum,
-                    numpp: numpp
-                };
-
-                res.render(type, {
-                    data: data,
-                    pnum: pnum
-                });
+            posts.findOne({
+                _id: id
+            }, function(err, data) {
+                if (data) {
+                    res.render('details', {
+                        data: data
+                    })
+                } else {
+                    res.redirect('/')
+                }
+            })
+        }
+        /**
+         * [simply get the data from mongodb and render the view of the about page]
+         */
+    var showAbout = function(req, res) {
+            winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
+            var posts = db.collection(coll_name);
+            posts.findOne({
+                type: 'about'
+            }, function(err, data) {
+                if (data) {
+                    res.render('about', {
+                        data: data
+                    })
+                } else {
+                    res.redirect('/')
+                }
 
             })
-        })
-    }
-    /**
-     * [show a detailed view of a record]
-     * @param  {[type]} req [record ID(req.query._id), can be converted to ObjectID in mongodb]
-     * @param  {[type]} res [if a record of certain id is found, render the details, else redirect home]
-     */
-    var showDetails = function(req, res) {
-        var posts = db.collection(coll_name);
-        try {
-            var id = require('mongodb').ObjectID(req.query._id.substr(1, 24));
-        } catch (err) {
-            console.log(err);
-            return;
         }
-        posts.findOne({
-            _id: id
-        }, function(err, data) {
-            if (data) {
-                res.render('details', {
-                    data: data
-                })
-            } else {
-                res.redirect('/')
-            }
-        })
-    }
-    /**
-     * [simply get the data from mongodb and render the view of the about page]
-     */
-    var showAbout = function(req, res) {
-        var posts = db.collection(coll_name);
-        posts.findOne({
-            type: 'about'
-        }, function(err, data) {
-            if (data) {
-                res.render('about', {
-                    data: data
-                })
-            } else {
-                res.redirect('/')
-            }
-
-        })
-    }
-    /**
-     * [function to delete a certain record
-     * And delete the directory consists the related files.]
-     * @param  {[type]} req [contains parameters including username and record ID]
-     * @param  {[type]} res [send back a json object with the delete result(true or false)]
-     */
+        /**
+         * [function to delete a certain record
+         * And delete the directory consists the related files.]
+         * @param  {[type]} req [contains parameters including username and record ID]
+         * @param  {[type]} res [send back a json object with the delete result(true or false)]
+         */
     var deleteOne = function(req, res) {
+        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var coll = db.collection(coll_name);
         var id = require('mongodb').ObjectID(req.body._id.substr(1, 24));
         var user = req.body.username;
         //check the record exsitence, find the directory of files and delete it.
         coll.findOne({
-            _id: id,
-            owner: user
-        }, function(err, doc) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            var cdir = '';//the directory consists the related files.
-            if (doc.img && doc.img[0]) {
-                cdir = '../' + doc.img[0].src.substring(0, doc.img[0].src.lastIndexOf('/'));
-                fs.remove(cdir);
-            } else if (doc.att && doc.att[0]) {
-                cdir = '../' + doc.att[0].substring(0, doc.att[0].lastIndexOf('/'));
-                fs.remove(cdir);
-            }
-        })
-        //delete from mongodb.
+                _id: id,
+                owner: user
+            }, function(err, doc) {
+                if (err) {
+                    winston.error(GetCurrentDatetime(), err);
+                    return;
+                }
+                var cdir = ''; //the directory consists the related files.
+                if (doc.img && doc.img[0]) {
+                    cdir = '../' + doc.img[0].src.substring(0, doc.img[0].src.lastIndexOf('/'));
+                    fs.remove(cdir);
+                } else if (doc.att && doc.att[0]) {
+                    cdir = '../' + doc.att[0].substring(0, doc.att[0].lastIndexOf('/'));
+                    fs.remove(cdir);
+                }
+            })
+            //delete from mongodb.
         coll.deleteOne({
             _id: id,
             owner: user
@@ -205,21 +233,21 @@ MongoClient.connect(url, function(err, db) {
                 res.json({
                     result: false
                 });
-                console.log(err);
+                winston.error(GetCurrentDatetime(), err);
                 return;
             }
-            console.log('deleted:' + result);
+            winston.info('deleted:' + result);
             res.json({
                 result: true
             });
         })
     }
 
-
     /**
      * [simply get the staff data from mongodb and render the view of the staff page]
      */
     var getStaffs = function(req, res) {
+        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var staff = db.collection('staff');
         staff.find().sort([
             ['inst', -1]
@@ -232,6 +260,7 @@ MongoClient.connect(url, function(err, db) {
     }
 
     var validateUser = function(req, res) {
+        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         ValidateUser(req.body.username, req.body.password, function(result) {
             res.json({
                 result: result
@@ -246,7 +275,7 @@ MongoClient.connect(url, function(err, db) {
             password: paramPassword
         }, function(err, count) {
             if (err) {
-                console.log(err);
+                winston.error(GetCurrentDatetime(), err);
                 return;
             }
             if (count == 1) {
@@ -258,6 +287,7 @@ MongoClient.connect(url, function(err, db) {
         })
     }
     var showUpload = function(req, res) {
+        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         if (req.cookies.username) {
             res.render('upload');
         } else {
@@ -266,7 +296,7 @@ MongoClient.connect(url, function(err, db) {
     }
 
     var addNewPost = function(req, res) {
-        console.log(req.cookies.uploadType);
+        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var cdir = '../lib/' + req.cookies.uploadType + '/upload_' + DatetimeDashMin() + '/';
         if (!fs.existsSync(cdir)) {
             fs.mkdirsSync(cdir);
@@ -297,7 +327,7 @@ MongoClient.connect(url, function(err, db) {
             var pct = (100 * (bytesReceived / bytesExpected)).toString();
             if (pct.substr(pct.lastIndexOf('.') + 1, 1) == 0) {
                 var progress = pct.substring(0, pct.lastIndexOf('.')) + "%";
-                console.log(progress);
+                winston.info(progress);
                 io.sockets.in('sessionId').emit('uploadProgress', progress);
             }
         });
@@ -383,13 +413,13 @@ MongoClient.connect(url, function(err, db) {
         });
         form.on('error', function(err) {
             io.sockets.in('sessionId').emit('uploadProgress', 'ERROR!');
-            console.log('ERROR!');
+            winston.error('ERROR!');
             fs.remove(cdir);
         });
 
         form.on('aborted', function() {
             io.sockets.in('sessionId').emit('uploadProgress', 'ABORTED!');
-            console.log('ABORTED!');
+            winston.error('ABORTED!');
         });
 
         form.on('end', function() {
@@ -447,7 +477,7 @@ MongoClient.connect(url, function(err, db) {
             var posts = db.collection(coll_name);
             posts.insertOne(newPost, function(err, r) {
                 if (err) {
-                    console.log(err);
+                    winston.error(GetCurrentDatetime(), err);
 
                     return;
                 }
@@ -458,7 +488,6 @@ MongoClient.connect(url, function(err, db) {
                     data: newPost
                 });
                 res.send(html);
-                console.log(html);
                 swapath.forEach(function(sp) {
                     fs.rename(sp.tp, sp.np);
                 });
@@ -494,20 +523,6 @@ MongoClient.connect(url, function(err, db) {
     function DatetimeDashMin() {
         return DatetimeDash().substring(0, DatetimeDash().length - 3)
     }
-    //set views and view engine;
-    app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
-
-    app.use(cookieParser());
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({
-        extended: false
-    }));
-
-    //serve static files:
-    app.use('/scripts', express.static('scripts'));
-    app.use('/styles', express.static('styles'));
-    app.use('/lib', express.static('../mariana-lib'));
 
     app.get('/', showHome)
         /*app.get('/', function(req, res) {

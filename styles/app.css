@@ -1,0 +1,173 @@
+/*
+    color:#1496bb;*/
+
+html {
+    margin: auto;
+}
+
+body {
+    font-family: Helvetica, Tahoma, Arial, STXihei, “华文细黑”, “Microsoft YaHei”, “微软雅黑”, SimSun, “宋体”, Heiti, “黑体”, sans-serif;
+    /*background-color: #f5f6f1;*/
+    min-height: 100%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-image: url('../styles/ico/uw1920-8.jpg');
+    font-size: 15px;
+}
+
+header {
+    padding-top: 45px;
+}
+
+p {
+    word-wrap: break-word;
+}
+.whitetxt{
+    color:white;
+}
+.row {
+    margin: 0px 0px 0px 0px;
+}
+.list-group {
+    font-size: 15px;
+}
+
+.container-fluid {
+    padding: 0px 0px 0px 0px;
+}
+.navbar-fixed-top{
+   opacity: 0.9;
+}
+.navbar-brand {
+    font-size: 26px;
+}
+.navbar-link {
+    font-size: 16px;
+}
+
+.navbar-brand,
+.navbar-link {
+    cursor: pointer;
+}
+
+.nav_icon {
+    width: 16px;
+    height: 16px;
+    margin: 0px 2px -2px 2px;
+}
+
+.navbar-toggle {
+    float: left;
+    margin-left: 5px;
+    margin-right: 0px;
+}
+
+.no-side-boundry {
+    mragin-left: 0px;
+    mragin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#slr-inner {
+    width: 100%;
+    height: 490px;
+}
+
+#slr-inner .item {
+    height: 100%;
+}
+
+#slr {
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+.slr-img {
+    margin: auto;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+}
+.carousel-caption{
+    text-shadow: 1px 1px 7px #000;
+}
+.references {
+    box-shadow: 3px 3px 10px 0px rgba(81, 81, 81, 0.4);
+}
+
+#home-below {
+    padding: 0px;
+}
+
+#home-below {
+    width: 100%;
+}
+
+.article {
+    padding: 20px 0px 40px 0px;
+    background-color: white;
+    color: black;
+}
+
+.panel {
+    margin: 8px 4px 8px 4px;
+    padding: 0px;
+}
+
+.sourcelabel {
+    color: white;
+}
+
+.panel-title {
+    cursor: pointer;
+}
+
+.appendix_label {
+    color: crimson;
+    left: 10px;
+    position: relative;
+}
+
+table.table {
+    font-size: 15px;
+}
+
+.login_input {
+    width: 240px;
+    font-size: 15px;
+    margin-top: 5px;
+}
+
+#login_submit {
+    margin: 10px;
+}
+
+.aboutitle {
+    text-align: center;
+}
+
+.staffs {
+    margin: auto;
+    background-color: white;
+    color: black;
+}
+
+.refe_row {
+    display: block;
+    padding: 4px;
+}
+
+.refesq {
+    margin-right: 10px;
+}
+
+.news-img {
+    min-height: 200px;
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.detail_entry {
+    cursor: pointer;
+}

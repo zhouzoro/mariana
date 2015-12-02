@@ -1,0 +1,25 @@
+extends layout
+
+block main
+	.container-fluid
+		.row
+			.article.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+				.row
+					.col-xs-12.col-sm-12.col-md-5.col-lg-4
+						h3 数据资料下载
+					include pager
+
+				.row
+					ul.list-group
+						each doc, index in data
+							li.list-group-item
+								.row
+									.div_datelabel.col-md-3
+										a.datelabel= doc.date.substr(0, 10)
+									.div_dlinklabel.col-md-5
+										p.dlinklabel= doc.title
+									.div_downloadLink.col-md-4
+										if doc.att.length
+											- var downloadPath = doc.att[0]
+											- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
+											a.downloadlink(id=index href='../../' + downloadPath download=fileName)= fileName

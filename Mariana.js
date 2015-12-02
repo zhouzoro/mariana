@@ -507,7 +507,7 @@ MongoClient.connect(url, function(err, db) {
     //serve static files:
     app.use('/scripts', express.static('scripts'));
     app.use('/styles', express.static('styles'));
-    app.use('/lib', express.static('../lib'));
+    app.use('/lib', express.static('../mariana-lib'));
 
     app.get('/', showHome)
         /*app.get('/', function(req, res) {

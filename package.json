@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Miariana Trench Project",
   "scripts": {
-    "start": "node ./server.js"
+    "start": "node ./Mariana.js"
   },
   "dependencies": {
     "body-parser": "^1.14.1",

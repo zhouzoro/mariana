@@ -5,15 +5,14 @@ var port = process.env.PORT || 80;
 //get all route method moudlue:
 var routes = require('./routes/routes');
 
-var bodyParser = require('body-parser');
+var bodyParser = require('body-parser'); //body-parser doesn't handle multipart bodies, so can be used alongside formidable.
 var cookieParser = require('cookie-parser');
-
-var path = require('path');
 
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
-var url = 'mongodb://127.0.0.1:27017/test';
+var url = 'mongodb://mariana:Mariana_mongoDB@210.77.91.195:27017/test';
 
+var path = require('path');
 //set views and view engine;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -28,13 +27,14 @@ app.use(bodyParser.urlencoded({
 app.use('/scripts', express.static('scripts'));
 app.use('/styles', express.static('styles'));
 app.use('/lib', express.static('../lib'));
+
 //connect to mongodb, and stay connected ever since.
 MongoClient.connect(url, function(err, db) {
     if (err) {
         winston.info(GetCurrentDatetime(), err);
     }
 
-    app.get('/', routes.showHome(db))
+    app.get('/', routes.showHome(db));
 
     app.get('/details?', routes.showDetails(db));
 

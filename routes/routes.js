@@ -1,29 +1,32 @@
-var fs = require('fs-extra');
-var path = require('path');
+var fs = require('fs-extra'); //fs-extra to mkdir, rename and remove
 
-var coll_name = 'mariana';
+var coll_name = 'mariana'; //mongodb collection name
 
-var formidable = require('formidable');
+var formidable = require('formidable'); //formidable to handle form upload
 var util = require('util');
 
 var jade = require('jade');
-var details = jade.compileFile('./views/details.jade');
+var home = jade.compileFile('./views/home.jade');
+var details = jade.compileFile('./views/details.jade'); //pre-compile details.jade will be used a lot
 
-var io = require('socket.io')(socketioPort);
 var socketioPort = 30000;
+var io = require('socket.io')(socketioPort); //socket.io just to emit upload progress, kinda silly...
 
 io.on('connection', function(socket) {
     winston.info('CONNECTED');
     socket.join('sessionId');
 });
 
-var winston = require('winston');
+var winston = require('winston'); //winston.js to log info and error
 winston.add(winston.transports.File, {
     filename: '../lib/mariana-logs.log',
     handleExceptions: true,
     humanReadableUnhandledException: true
 });
 
+/**
+ * all exported function takes a db(a mongodb object) as parameter
+ */
 module.exports.showHome = function(db) {
     /**function to gather info from db and then render the home page;
      * takes No param, ends with res.render.
@@ -32,7 +35,7 @@ module.exports.showHome = function(db) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         posts.find({
-            type: 'news'
+            type: 'news' //get news data
         }).limit(6).sort([
             ['date', -1]
         ]).toArray(function(err, news) {
@@ -40,7 +43,7 @@ module.exports.showHome = function(db) {
                 winston.error(GetCurrentDatetime(), err);
             }
             posts.find({
-                type: 'mtin'
+                type: 'mtin' //get meeting data
             }).limit(6).sort([
                 ['date', -1]
             ]).toArray(function(err, mtin) {
@@ -50,7 +53,7 @@ module.exports.showHome = function(db) {
                     return;
                 }
                 posts.find({
-                    type: 'data'
+                    type: 'data' //get resources data
                 }).limit(6).sort([
                     ['date', -1]
                 ]).toArray(function(err, data) {
@@ -59,11 +62,12 @@ module.exports.showHome = function(db) {
 
                         return;
                     }
-                    res.render('home', {
+                    var html = home({ //render with datas
                         news: news,
                         mtin: mtin,
                         data: data
                     });
+                    res.send(html)//.replace(/</g,"bk"))
 
                 })
             })
@@ -105,15 +109,13 @@ module.exports.setRecords = function(db) {
             posts.count({
                 type: type
             }, function(err, count) {
-                var tnum = Math.ceil(count / numpp);
-                //pass a page number infomation to the page, prepare for future query.
-                var pnum = {
+                var tnum = Math.ceil(count / numpp); //count how many pages
+                var pnum = { //pass all page number infomation to the page, prepare for future query.
                     type: type,
                     cnum: cnum,
                     tnum: tnum,
                     numpp: numpp
                 };
-
                 res.render(type, {
                     data: data,
                     pnum: pnum
@@ -132,16 +134,16 @@ module.exports.showDetails = function(db) {
     return function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
-        try {
+        try { //try convert ObjectID, avoid crash
             var id = require('mongodb').ObjectID(req.query._id.substr(1, 24));
         } catch (err) {
             winston.error(GetCurrentDatetime(), err);
             return;
         }
-        posts.findOne({
+        posts.findOne({ //find with ObjectId
             _id: id
         }, function(err, data) {
-            if (data) {
+            if (data) { //found? render : redirect home
                 res.render('details', {
                     data: data
                 })
@@ -184,40 +186,40 @@ module.exports.deleteOne = function(db) {
         var coll = db.collection(coll_name);
         var id = require('mongodb').ObjectID(req.body._id.substr(1, 24));
         var user = req.body.username;
-        //check the record exsitence, find the directory of files and delete it.
+
         coll.findOne({
-                _id: id,
-                owner: user
-            }, function(err, doc) {
-                if (err) {
-                    winston.error(GetCurrentDatetime(), err);
-                    return;
-                }
-                var cdir = ''; //the directory consists the related files.
-                if (doc.img && doc.img[0]) {
-                    cdir = '../' + doc.img[0].src.substring(0, doc.img[0].src.lastIndexOf('/'));
-                    fs.remove(cdir);
-                } else if (doc.att && doc.att[0]) {
-                    cdir = '../' + doc.att[0].substring(0, doc.att[0].lastIndexOf('/'));
-                    fs.remove(cdir);
-                }
-            })
-            //delete from mongodb.
-        coll.deleteOne({
             _id: id,
             owner: user
-        }, function(err, result) {
+        }, function(err, doc) { //found ? delete record and file : return
             if (err) {
-                res.json({
-                    result: false
-                });
                 winston.error(GetCurrentDatetime(), err);
                 return;
             }
-            winston.info('deleted:' + result);
-            res.json({
-                result: true
-            });
+
+            coll.deleteOne({ //delete from mongodb
+                _id: id,
+                owner: user
+            }, function(err, result) {
+                if (err) {
+                    res.json({
+                        result: false
+                    });
+                    winston.error(GetCurrentDatetime(), err);
+                    return;
+                }
+                winston.info('deleted:' + result);
+                res.json({
+                    result: true
+                });
+            })
+            var cdir = ''; //remove the directory consists the related files.
+            if (doc.img && doc.img[0]) {
+                cdir = '../' + doc.img[0].src.substring(0, doc.img[0].src.lastIndexOf('/'));
+                fs.remove(cdir);
+            } else if (doc.att && doc.att[0]) {
+                cdir = '../' + doc.att[0].substring(0, doc.att[0].lastIndexOf('/'));
+                fs.remove(cdir);
+            }
         })
     }
 }

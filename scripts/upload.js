@@ -46,12 +46,12 @@ $(document).ready(function() {
     var boldClick = function() {
         if ($(this).data('checked') === 'n') {
             $(this).attr('src', '../styles/ico/bold01.png');
-            $(this).parent('.adjust_font').prev('textarea').css('font-weight', 'bold');
+            $(this).parent('.adjust_font').next('textarea').css('font-weight', 'bold');
             $(this).next('.bold').val('bold');
             $(this).data('checked', 'y');
         } else if ($(this).data('checked') === 'y') {
             $(this).attr('src', '../styles/ico/bold00.png');
-            $(this).parent('.adjust_font').prev('textarea').css('font-weight', 'normal');
+            $(this).parent('.adjust_font').next('textarea').css('font-weight', 'normal');
             $(this).next('.bold').val('normal');
             $(this).data('checked', 'n');
         }
@@ -59,18 +59,18 @@ $(document).ready(function() {
     var italicClick = function() {
         if ($(this).data('checked') === 'n') {
             $(this).attr('src', '../styles/ico/italic01.png');
-            $(this).parent('.adjust_font').prev('textarea').css('font-style', 'italic');
+            $(this).parent('.adjust_font').next('textarea').css('font-style', 'italic');
             $(this).next('.italic').val('italic');
             $(this).data('checked', 'y');
         } else if ($(this).data('checked') === 'y') {
             $(this).attr('src', '../styles/ico/italic00.png');
-            $(this).parent('.adjust_font').prev('textarea').css('font-style', 'normal');
+            $(this).parent('.adjust_font').next('textarea').css('font-style', 'normal');
             $(this).next('.italic').val('normal');
             $(this).data('checked', 'n');
         }
     }
     var fsizeChange = function() {
-        $(this).parent('.adjust_font').prev('textarea').css('font-size', $(this).val());
+        $(this).parent('.adjust_font').next('textarea').css('font-size', $(this).val());
     }
     var taCount = 0;
     var imgCount = 0;

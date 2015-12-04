@@ -1,5 +1,11 @@
+var express = require('express');
+var router = express.Router();
+
 var fs = require('fs-extra'); //fs-extra to mkdir, rename and remove
 
+var MongoClient = require('mongodb').MongoClient;
+var ObjectID = require('mongodb').ObjectID;
+var url = 'mongodb://mariana:Mariana_mongoDB@210.77.91.195:27017/test';
 var coll_name = 'mariana'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
@@ -27,11 +33,16 @@ winston.add(winston.transports.File, {
 /**
  * all exported function takes a db(a mongodb object) as parameter
  */
-module.exports.showHome = function(db) {
+
+//connect to mongodb, and stay connected ever since.
+MongoClient.connect(url, function(err, db) {
+    if (err) {
+        winston.info(GetCurrentDatetime(), err);
+    }
     /**function to gather info from db and then render the home page;
      * takes No param, ends with res.render.
      */
-    return function(req, res) {
+    router.get('/', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         posts.find({
@@ -67,20 +78,19 @@ module.exports.showHome = function(db) {
                         mtin: mtin,
                         data: data
                     });
-                    res.send(html)//.replace(/</g,"bk"))
+                    res.send(html) //.replace(/</g,"bk"))
 
                 })
             })
         })
-    }
-}
-module.exports.setRecords = function(db) {
+    })
+
     /**
      * [function to get certain type of record from mongodb]
      * @param {[object]} req [includes query containing record type(req.query.rtype), whitch page(req.query.cnum) and how many(req.query.numpp) records to be extracted.]
      * @param {[object]} res [render certain type of view to the client]
      */
-    return function(req, res) {
+    router.get('/records?', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var type = req.query.rtype; //record type
         var cnum = parseInt(req.query.cnum); //whitch page of record
@@ -123,15 +133,14 @@ module.exports.setRecords = function(db) {
 
             })
         })
-    }
-}
-module.exports.showDetails = function(db) {
+    })
+
     /**
      * [show a detailed view of a record]
      * @param  {[type]} req [record ID(req.query._id), can be converted to ObjectID in mongodb]
      * @param  {[type]} res [if a record of certain id is found, render the details, else redirect home]
      */
-    return function(req, res) {
+    router.get('/details?', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         try { //try convert ObjectID, avoid crash
@@ -151,13 +160,12 @@ module.exports.showDetails = function(db) {
                 res.redirect('/')
             }
         })
-    }
-}
-module.exports.showAbout = function(db) {
+    })
+
     /**
      * [simply get the data from mongodb and render the view of the about page]
      */
-    return function(req, res) {
+    router.get('/about', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         posts.findOne({
@@ -172,16 +180,15 @@ module.exports.showAbout = function(db) {
             }
 
         })
-    }
-}
-module.exports.deleteOne = function(db) {
+    })
+
     /**
      * [function to delete a certain record
      * And delete the directory consists the related files.]
      * @param  {[type]} req [contains parameters including username and record ID]
      * @param  {[type]} res [send back a json object with the delete result(true or false)]
      */
-    return function(req, res) {
+    router.post('/delete', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var coll = db.collection(coll_name);
         var id = require('mongodb').ObjectID(req.body._id.substr(1, 24));
@@ -221,13 +228,12 @@ module.exports.deleteOne = function(db) {
                 fs.remove(cdir);
             }
         })
-    }
-}
-module.exports.getStaffs = function(db) {
+    })
+
     /**
      * [simply get the staff data from mongodb and render the view of the staff page]
      */
-    return function(req, res) {
+    router.get('/staff', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var staff = db.collection('staff');
         staff.find().sort([
@@ -238,48 +244,45 @@ module.exports.getStaffs = function(db) {
             });
 
         })
-    }
-}
-module.exports.validateUser = function(db) {
-    return function(req, res) {
+    })
+
+    router.post('/authentication', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         ValidateUser(req.body.username, req.body.password, function(result) {
             res.json({
                 result: result
             });
         });
-    }
-}
-var ValidateUser = function(paramUsername, paramPassword, callback) {
-    var users = db.collection('mariana_users');
-    users.count({
-        username: paramUsername,
-        password: paramPassword
-    }, function(err, count) {
-        if (err) {
-            winston.error(GetCurrentDatetime(), err);
-            return;
-        }
-        if (count == 1) {
-            return callback(true);
-        } else {
-            return callback(false);
-        }
-
     })
-}
-module.exports.showUpload = function(db) {
-    return function(req, res) {
+    var ValidateUser = function(paramUsername, paramPassword, callback) {
+        var users = db.collection('mariana_users');
+        users.count({
+            username: paramUsername,
+            password: paramPassword
+        }, function(err, count) {
+            if (err) {
+                winston.error(GetCurrentDatetime(), err);
+                return;
+            }
+            if (count == 1) {
+                return callback(true);
+            } else {
+                return callback(false);
+            }
+
+        })
+    }
+
+    router.get('/upload', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         if (req.cookies.username) {
             res.render('upload');
         } else {
             res.send('Illegal Access!');
         }
-    }
-}
-module.exports.addNewPost = function(db) {
-    return function(req, res) {
+    })
+
+    router.post('/add_new_post', function(req, res) {
         winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var cdir = '../lib/' + req.cookies.uploadType + '/upload_' + DatetimeDashMin() + '/';
         if (!fs.existsSync(cdir)) {
@@ -478,8 +481,9 @@ module.exports.addNewPost = function(db) {
             });
         });
         form.parse(req);
-    }
-}
+    })
+
+});
 
 function GetCurrentDate() {
     var cdate = new Date();
@@ -507,3 +511,4 @@ function DatetimeDash() {
 function DatetimeDashMin() {
     return DatetimeDash().substring(0, DatetimeDash().length - 3)
 }
+module.exports = router;

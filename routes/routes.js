@@ -29,12 +29,65 @@ winston.add(winston.transports.File, {
     handleExceptions: true,
     humanReadableUnhandledException: true
 });
-
 /**
- * all exported function takes a db(a mongodb object) as parameter
+ * middleware function to log info
  */
+router.use(function(req, res, next) {
+    winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
+    fs.readFile('../lib/mariana-logs.log', function(err, data) {
+        if (err) {
+            console.log(err);
+            return
+        }
+        try {
+            var logs = data.toString().split('\n');
+            var newLog = JSON.parse(logs[logs.length - 2]);
+            io.sockets.in('sessionId').emit('log', newLog);
+        } catch (err) {
+            logErr(err);
+        }
+    });
+    next();
+})
 
-//connect to mongodb, and stay connected ever since.
+var renderCallBack = function(res) {
+    return function(err, html) {
+        if (err) {
+            res.end(err);
+            logErr(err);
+            io.sockets.in('sessionId').emit('log', err);
+            return;
+        }
+        res.send(html);
+    }
+}
+
+var logErr = function(err) {
+    logErr(err);
+    io.sockets.in('sessionId').emit('log', err);
+}
+router.get('/log', function(req, res) {
+    res.render('log');
+})
+router.get('/logs', function(req, res) {
+        fs.readFile('../lib/mariana-logs.log', function(err, data) {
+            if (err) {
+                logErr(err);
+                return
+            }
+            try {
+                var logs = data.toString().split('\n');
+                for (var i = 0; i < logs.length - 1; i++) {
+                    var newLog = JSON.parse(logs[i]);
+                    io.sockets.in('sessionId').emit('log', newLog);
+                }
+            } catch (err) {
+                logErr(err);
+            }
+            res.send('end');
+        })
+    })
+    //connect to mongodb, and stay connected ever since.
 MongoClient.connect(url, function(err, db) {
     if (err) {
         winston.info(GetCurrentDatetime(), err);
@@ -43,7 +96,6 @@ MongoClient.connect(url, function(err, db) {
      * takes No param, ends with res.render.
      */
     router.get('/', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         posts.find({
             type: 'news' //get news data
@@ -91,7 +143,6 @@ MongoClient.connect(url, function(err, db) {
      * @param {[object]} res [render certain type of view to the client]
      */
     router.get('/records?', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var type = req.query.rtype; //record type
         var cnum = parseInt(req.query.cnum); //whitch page of record
         var numpp = parseInt(req.query.numpp); //how many record per page.
@@ -129,7 +180,7 @@ MongoClient.connect(url, function(err, db) {
                 res.render(type, {
                     data: data,
                     pnum: pnum
-                });
+                }, renderCallBack(res));
 
             })
         })
@@ -141,7 +192,6 @@ MongoClient.connect(url, function(err, db) {
      * @param  {[type]} res [if a record of certain id is found, render the details, else redirect home]
      */
     router.get('/details?', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         try { //try convert ObjectID, avoid crash
             var id = require('mongodb').ObjectID(req.query._id.substr(1, 24));
@@ -155,7 +205,7 @@ MongoClient.connect(url, function(err, db) {
             if (data) { //found? render : redirect home
                 res.render('details', {
                     data: data
-                })
+                }, renderCallBack(res))
             } else {
                 res.redirect('/')
             }
@@ -166,7 +216,6 @@ MongoClient.connect(url, function(err, db) {
      * [simply get the data from mongodb and render the view of the about page]
      */
     router.get('/about', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var posts = db.collection(coll_name);
         posts.findOne({
             type: 'about'
@@ -174,7 +223,7 @@ MongoClient.connect(url, function(err, db) {
             if (data) {
                 res.render('about', {
                     data: data
-                })
+                }, renderCallBack(res))
             } else {
                 res.redirect('/')
             }
@@ -189,7 +238,6 @@ MongoClient.connect(url, function(err, db) {
      * @param  {[type]} res [send back a json object with the delete result(true or false)]
      */
     router.post('/delete', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var coll = db.collection(coll_name);
         var id = require('mongodb').ObjectID(req.body._id.substr(1, 24));
         var user = req.body.username;
@@ -234,20 +282,18 @@ MongoClient.connect(url, function(err, db) {
      * [simply get the staff data from mongodb and render the view of the staff page]
      */
     router.get('/staff', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var staff = db.collection('staff');
         staff.find().sort([
             ['inst', -1]
         ]).toArray(function(err, data) {
             res.render('staff', {
                 data: data
-            });
+            }, renderCallBack(res));
 
         })
     })
 
     router.post('/authentication', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         ValidateUser(req.body.username, req.body.password, function(result) {
             res.json({
                 result: result
@@ -274,16 +320,14 @@ MongoClient.connect(url, function(err, db) {
     }
 
     router.get('/upload', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         if (req.cookies.username) {
-            res.render('upload');
+            res.render('upload', renderCallBack(res));
         } else {
             res.send('Illegal Access!');
         }
     })
 
     router.post('/add_new_post', function(req, res) {
-        winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
         var cdir = '../lib/' + req.cookies.uploadType + '/upload_' + DatetimeDashMin() + '/';
         if (!fs.existsSync(cdir)) {
             fs.mkdirsSync(cdir);

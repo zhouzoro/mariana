@@ -1,0 +1,17 @@
+doctype html
+html
+	head
+		meta(charset='utf-8')
+		link(rel='stylesheet' href='../styles/log.css')
+	body
+		.log
+		//each log,index in logs
+			.log(data-level=log.level)
+				label.log-text.log-level= log.level
+				label.log-text.log-date= log.date
+				label.log-text.log-msg= log.message
+				p.log-text= JSON.stringify(log)
+		script(src='../scripts/jquery-2.1.4.min.js')
+		script(src='https://cdn.socket.io/socket.io-1.3.7.js')
+		script(src='https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js')
+		script(src='../scripts/log.js')

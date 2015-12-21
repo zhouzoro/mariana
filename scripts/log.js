@@ -8,10 +8,10 @@ $(document).ready(function() {
         }
     })
 
-    var socket = io.connect('http://210.77.91.195:30000/');
-     //var socket = io.connect('http://127.0.0.1:30001/');
+    //var socket = io.connect('http://210.77.91.195:30000/');
+    var socket = io.connect('http://127.0.0.1:30000/');
     socket.on('log', function(log) {
-        if (typeof(log) == 'object') {
+        if (typeof(log) === 'object') {
             var newLog = $('<div>').attr('class', 'log');
             var logLevel = $('<label>').attr('class', 'log-text log-level').text(log.level);
             var logDate = $('<label>').attr('class', 'log-text log-timr').text('_at_' + log.date);
@@ -26,12 +26,11 @@ $(document).ready(function() {
                 logDate.addClass('log-level-info');
                 logMsg.addClass('log-level-info');
             }
-            $('div:first').prepend(newLog
-                .append(logLevel).append(logDate).append(logMsg).append(logDetail));
+            newLog.append(logLevel).append(logDate).append(logMsg).append(logDetail);
         } else if (typeof(log) == 'string') {
             var newLog = $('<div>').attr('class', 'log').text(log);
-            $('div:first').prepend(newLog);
         }
+        newLog.insertBefore('div:first');
     })
     $.get('/logs', function(res) {
         console.log(res);

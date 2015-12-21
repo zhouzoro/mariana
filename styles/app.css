@@ -3,20 +3,28 @@
 
 html {
     margin: auto;
+    min-height: 100%;
 }
 
 body {
     font-family: Helvetica, Tahoma, Arial, STXihei, “华文细黑”, “Microsoft YaHei”, “微软雅黑”, SimSun, “宋体”, Heiti, “黑体”, sans-serif;
     /*background-color: #f5f6f1;*/
     min-height: 100%;
+    background-color: white;
     background-size: 100%;
-    background-repeat: no-repeat;
-    background-image: url('../styles/ico/uw1920-8.jpg');
+    background-image: url('../sstyles/ico/uw1920-8.jpg');
     font-size: 15px;
+
+    background: #4C8BE8; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#4C8BE8, #06274E); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#4C8BE8, #06274E); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#4C8BE8, #06274E); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#4C8BE8, #06274E); /* Standard syntax */
+    background-repeat: no-repeat;
 }
 
 header {
-    padding-top: 45px;
+    padding-top: 80px;
 }
 
 p {
@@ -37,9 +45,12 @@ p {
 }
 .navbar-fixed-top{
    opacity: 0.9;
+   min-height: 64px;
 }
+
 .navbar-brand {
     font-size: 26px;
+    display: block;
 }
 .navbar-link {
     font-size: 16px;

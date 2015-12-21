@@ -7,7 +7,8 @@ html
 		link(rel='stylesheet' href='../styles/css/bootstrap.yeti.min.css')
 		//link(rel='stylesheet' href='https://cdn.jsdelivr.net/bootswatch/3.3.6/yeti/bootstrap.min.css')
 		link(rel='stylesheet' href='../styles/app.css')
-		block more_style
+		link(rel='stylesheet' href='../styles/details.css')
+		//link(rel='stylesheet' href='../styles/upload.css')
 	body
 		header#header
 			nav.navbar.navbar-default.navbar-fixed-top
@@ -20,6 +21,7 @@ html
 								span.icon-bar
 								span.icon-bar
 							.navbar-brand(onclick="window.location='/'") 马里亚纳海沟计划
+						br
 						#navco.collapse.navbar-collapse
 							ul.nav.navbar-nav
 								li
@@ -36,13 +38,16 @@ html
 									a.navbar-link.a_nav(data-type='about') 关于
 							ul.nav.navbar-nav.navbar-right
 								li
-									a.navbar-link.login_entry(data-toggle='modal' data-target='#ldlog') 登录
+									a.navbar-link#login_entry(data-toggle='modal' data-target='#ldlog' title='log in')
+										span.glyphicon.glyphicon-log-in
 								li
-									a.navbar-link#upload_entry(onclick="window.location='/upload'")
+									a.navbar-link#upload_entry(title='upload')
+										span.glyphicon.glyphicon-cloud-upload
 								li
 									a.navbar-link#log_out
+										span.glyphicon.glyphicon-log-out
 		#ldlog.modal.fade(tabindex='-1' role='dialog')
-			.modal-dialog.modal-sm(role='document')
+			.modal-dialog.modal-md(role='document')
 				.modal-content
 					.modal-header
 						button.close(type='button' data-dismiss='modal' aria-label='Close')
@@ -52,10 +57,14 @@ html
 						input#login_password.login_input.form-control(type="text" value="Password")
 					.modal-foot
 						button#login_submit.btn.btn-primary(type='button') Login
-		block main
+		#main_body(data-init-url=initUrl ? initUrl : '/home')
 		block scripts
-			script(src='//code.jquery.com/jquery-2.1.4.min.js')
-			script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous")
+			//script(src='//code.jquery.com/jquery-2.1.4.min.js')
+			//script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous")
+			script(src='../scripts/jquery-2.1.4.min.js')
+			script(src='https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js')
+			//script(src='../scripts/coffee-script.js')
+			script(src='../scripts/bootstrap.min.js')
 			script(src='../scripts/js.cookie.js')
 			script(src='../scripts/core.js')
 		//include footer

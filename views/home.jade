@@ -1,71 +1,68 @@
-extends layout
-
-block main
-		.container-fluid
-			.no-side-boundry.row
-				.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-					//.jumbotron
-					#slr.carousel.slide(data-ride="carousel")
-						ol.carousel-indicators
+.container-fluid
+	.no-side-boundry.row
+		.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+			//.jumbotron
+			#slr.carousel.slide(data-ride="carousel")
+				ol.carousel-indicators
+					each doc, index in news
+						li(data-target='#slr' data-slide-to=index)
+				#slr-inner.carousel-inner(role="listbox")
+					if news.length
 							each doc, index in news
-								li(data-target='#slr' data-slide-to=index)
-						#slr-inner.carousel-inner(role="listbox")
-							if news.length
-									each doc, index in news
-										if index==0
-											.slr-it.item.active
-												if doc.img.length
-													img.slr-img.detail_entry(data-id=doc._id src='../' + doc.img[0].src alt='slider image')
-												.carousel-caption.detail_entry(data-id=doc._id)
-													h3= doc.title
-													label.slabelextra
-														a.slabeldate= doc.date.substr(0, 10)
-														label.slabelsource= doc.source
-										else
-											.slr-it.item
-												if doc.img.length
-													img.slr-img.detail_entry(data-id=doc._id src='../' + doc.img[0].src alt='slider image')
-												.carousel-caption.detail_entry(data-id=doc._id)
-													h3= doc.title
-													label.slabelextra
-														a.slabeldate= doc.date.substr(0, 10)
-														label.slabelsource= doc.source
-						a.left.carousel-control(href='#slr' role="button" data-slide="prev")
-							span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
-							span.sr-only Previous
-						a.right.carousel-control(href='#slr' role="button" data-slide="next")
-							span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
-							span.sr-only Next
-		#home-below.container-fluid
-				.no-side-boundry.row
-					.no-side-boundry.col-xs-12.col-sm-12.col-md-5.col-md-offset-1.col-lg-4.col-lg-offset-2
-						.panel.panel-default
-							.panel-heading
-								a.panel-title.a_nav(data-type='mtin') 会议安排
-							.panel-body
-								ul.list-group
-									each doc, index in mtin
-										li.list-group-item
-											.row
-												.div_datelabel.col-md-3
-													a.datelabel= doc.date.substr(0, 10)
-												.div_dlinklabel.col-md-9
-													p.dlinklabel.detail_entry(data-id=doc._id)= doc.title
-					.no-side-boundry.col-xs-12.col-sm-12.col-md-5.col-lg-4
-						.panel.panel-default
-							.panel-heading
-								a.panel-title.a_nav(data-type='data') 资源下载
-							.panel-body
-								ul.list-group
-									each doc, index in data
-										li.list-group-item
-											.row
-												.div_datelabel.col-md-3
-													a.datelabel= doc.date.substr(0, 10)
-												.div_dlinklabel.col-md-9
-													p.dlinklabel= doc.title
-												.div_downloadLink.col-md-9.col-md-offset-3
-													if doc.att.length
-														- var downloadPath = doc.att[0]
-														- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
-														a.downloadlink(id=index href='../../' + downloadPath download=fileName)= fileName
+								if index==0
+									.slr-it.item.active
+										if doc.img.length
+											img.slr-img(src='../' + doc.img[0].src alt='slider image' onclick='showDetail("'+doc._id+'")')
+										.carousel-caption
+											h3= doc.title
+											label.slabelextra
+												a.slabeldate= doc.date.substr(0, 10)
+												label.slabelsource= doc.source
+								else
+									.slr-it.item
+										if doc.img.length
+											img.slr-img(src='../' + doc.img[0].src alt='slider image' onclick='showDetail("'+doc._id+'")')
+										.carousel-caption
+											h3= doc.title
+											label.slabelextra
+												a.slabeldate= doc.date.substr(0, 10)
+												label.slabelsource= doc.source
+				a.left.carousel-control(href='#slr' role="button" data-slide="prev")
+					span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
+					span.sr-only Previous
+				a.right.carousel-control(href='#slr' role="button" data-slide="next")
+					span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
+					span.sr-only Next
+#home-below.container-fluid
+		.no-side-boundry.row
+			.no-side-boundry.col-xs-12.col-sm-12.col-md-5.col-md-offset-1.col-lg-4.col-lg-offset-2
+				.panel.panel-default
+					.panel-heading
+						a.panel-title.a_nav(data-type='mtin') 会议安排
+					.panel-body
+						ul.list-group
+							each doc, index in mtin
+								li.list-group-item
+									.row
+										.div_datelabel.col-md-3
+											a.datelabel= doc.date.substr(0, 10)
+										.div_dlinklabel.col-md-9
+											p.dlinklabel( onclick='showDetail("'+doc._id+'")')= doc.title
+			.no-side-boundry.col-xs-12.col-sm-12.col-md-5.col-lg-4
+				.panel.panel-default
+					.panel-heading
+						a.panel-title.a_nav(data-type='data') 资源下载
+					.panel-body
+						ul.list-group
+							each doc, index in data
+								li.list-group-item
+									.row
+										.div_datelabel.col-md-3
+											a.datelabel= doc.date.substr(0, 10)
+										.div_dlinklabel.col-md-9
+											p.dlinklabel= doc.title
+										.div_downloadLink.col-md-9.col-md-offset-3
+											if doc.att.length
+												- var downloadPath = doc.att[0]
+												- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
+												a.downloadlink(id=index href='../../' + downloadPath download=fileName)= fileName

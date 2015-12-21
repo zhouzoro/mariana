@@ -1,16 +1,13 @@
-extends layout
-
-block main
-	.container-fluid
-		.row
-			.article.references.col-xs-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-				.row
-					h3.col-xs-12.col-lg-10.col-lg-offset-1 参考文献
-				each doc, index in data
-					.row.refe_row
-						.col-xs-12.col-lg-10.col-lg-offset-1
-							if doc.att.length
-								- var downloadPath = doc.att[0]
-								- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
-								label.refesq= '['+ doc.serl+']'
-								a.refelink(id=index href='../../' + downloadPath download=fileName)= doc.body[0]
+.container-fluid
+	.row
+		.article.references.col-xs-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+			.row
+				h3.col-xs-12.col-lg-10.col-lg-offset-1 参考文献
+			each doc, index in data
+				.row.refe_row
+					.col-xs-12.col-lg-10.col-lg-offset-1
+						if doc.att.length
+							- var downloadPath = doc.att[0]
+							- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
+							label.refesq= '['+ doc.serl+']'
+							a.refelink(id=index href='../../' + downloadPath download=fileName)= doc.body[0]

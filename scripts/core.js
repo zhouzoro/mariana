@@ -1,17 +1,40 @@
 $(document).ready(function() {
-    setPageNav();
-    setFont();
+    loadContent($('#main_body').data('init-url'));
     if (Cookies.get('username')) {
         setUser(Cookies.get('username'));
-        setDelete();
     } else {
-        screenDownload();
         setLogin();
     }
     window.onscroll = windowOnScroll;
-    $('.a_nav').each(setNav);
-    $('.detail_entry').click(showDetail);
 })
+var loadContent = function(url) {
+    var main = $('#main_body');
+    if ($('.main_body')[0]) {
+        $('.main_body').hide();
+    }
+    var newId = url.replace(/\//g, '_').replace(/=/g, '--').replace(/&/g, '_').replace('?', '-').replace(/"/g, '');
+    if ($('#' + newId)[0]) {
+        $('#' + newId)[0].show();
+        console.log('exists!');
+    } else {
+        $.get(url, function(html) {
+            var newContent = $('<div>').attr({
+                'id': newId,
+                'class': 'main_body'
+            })
+            main.html(newContent.html(html));
+            $('.a_nav').each(setNav);
+            setPageNav();
+            setFont();
+            if (Cookies.get('username')) {
+                setDelete();
+            } else {
+                screenDownload();
+            }
+        })
+    }
+    window.location = '#' + newId;
+}
 var setFont = function() {
     $('p').each(function() {
         if ($(this).data('fweight') === 'bold' || $(this).data('fweight') === 'normal') {
@@ -25,6 +48,7 @@ var setFont = function() {
 }
 var dLinks = [];
 var screenDownload = function() {
+    console.log('screen');
     $('.downloadlink').each(function() {
         dLinks.push({
             linkid: this.id,
@@ -33,12 +57,13 @@ var screenDownload = function() {
         })
         $(this).removeAttr('href');
         $(this).removeAttr('download');
+        $(this).click(showLogin);
     })
 }
 var setLogin = function() {
     $('#upload_entry').css('display', 'none');
     $('#log_out').css('display', 'none');
-    $('.login_entry').text('登录').attr('data-toggle', 'modal');
+    $('#login_entry').attr('data-toggle', 'modal');
     $('.downloadlink').click(showLogin).removeAttr('href').removeAttr('download');
     $('#login_username').val('Username');
     $('#login_password').val('Password');
@@ -49,17 +74,20 @@ var showLogin = function() {
     $('#ldlog').modal('show');
 }
 var setUser = function(username) {
-    $('.login_entry').text(username).off('click').removeAttr('data-toggle');
-    $('#upload_entry').css('display', 'inline-block').text('上传');
-    $('#log_out').css('display', 'inline-block').text('退出').click(logOut);
+    $('#login_entry').off('click').attr('title', 'log out').switchClass('glyphicon-log-in', 'glyphicon-log-out');
+    $('#upload_entry').css('display', 'inline-block').click(function() {
+        loadContent('/upload')
+    });
+    $('#log_out').css('display', 'inline-block').click(function() {
+        logOut()
+    });
 }
 var logOut = function() {
     Cookies.remove('username');
-    $('.login_entry').switchClass('username', 'login_entry', 0).text('登录').click(showLogin);
-    $('#upload_entry').css('display', 'none');
-    $(this).css('display', 'none');
+    setLogin();
 }
-var setNav = function() {
+setNav = function() {
+    $(this).off('click');
     var pathname = window.location.pathname;
     var cpath = pathname.substring(pathname.lastIndexOf('/') + 1);
     if (cpath == 'records') {
@@ -74,11 +102,11 @@ var setNav = function() {
         if ($(this).data('type') == 'staff' || $(this).data('type') == 'about') {
             $(this).click(function() {
                 cnav = $(this)
-                window.location = '/' + $(this).data('type');
+                loadContent('/' + $(this).data('type'));
             })
         } else {
             $(this).click(function() {
-                window.location = '/records?rtype=' + $(this).data('type') + '&cnum=0&numpp=12';
+                loadContent('/records?rtype=' + $(this).data('type') + '&cnum=0&numpp=12');
             })
         }
     }
@@ -95,7 +123,7 @@ var setDelete = function() {
                 if (res.result) {
                     window.location = '/';
                 } else {
-                    alert('Something went wrong!')
+                    alert('Something went wrong!');
                 }
             })
         })
@@ -140,11 +168,12 @@ var setDownload = function() {
 }
 var setNews = function() {
     newsUrl = '/news?rtype=news&cnum=' + $(this).data('packnum') + '&numpp=12';
-    window.location = newsUrl;
+    loadContent(newsUrl);
 }
-var showDetail = function() {
-    var detailsUrl = '/details?_id=' + $(this).data('id');
-    window.location = detailsUrl;
+var showDetail = function(id) {
+    console.log(id);
+    var detailsUrl = '/details?_id=' + id;
+    loadContent(detailsUrl);
 }
 var closeDlg = function() {
     $('#ldlog').modal('hide')
@@ -159,7 +188,7 @@ var setPageNav = function() {
     } else {
         loadNext.click(function() {
             newUrl = '/records?rtype=' + $(this).data('type') + '&cnum=' + $(this).data('cnum') + '&numpp=' + $(this).data('numpp');
-            window.location = newUrl;
+            loadContent(newUrl);
         })
     }
     if ($('.pagenum') && $('.pagenum').data('pagenum') == 1) {
@@ -168,7 +197,7 @@ var setPageNav = function() {
     } else {
         loadPrevious.click(function() {
             newUrl = '/records?rtype=' + $(this).data('type') + '&cnum=' + $(this).data('cnum') + '&numpp=' + $(this).data('numpp');
-            window.location = newUrl;
+            loadContent(newUrl);
         })
     }
 }
@@ -200,7 +229,7 @@ var windowOnScroll = function() {
     }
 }
 
-function checkVisible(elm, evalType) {
+checkVisible = function(elm, evalType) {
     evalType = evalType || 'visible';
 
     var vpH = $(window).height(), // Viewport Height

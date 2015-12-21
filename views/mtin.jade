@@ -1,18 +1,15 @@
-extends layout
-
-block main
-	.container-fluid
-		.row
-			.article.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-				.row
-					.col-xs-12.col-sm-12.col-md-5.col-lg-4
-						h3 会议通知
-					include pager
-				.container-fluid
-					each doc in data
-						.no-side-boundry.panel.panel-info
-							.panel-heading
-								a.panel-title.detail_entry(data-id=doc._id)= doc.title
-							.panel-body
-								a=doc.date
-								p(data-fsize=doc.body[0].fsize ? doc.body[0].fsize : '' data-fweight=doc.body[0].fweight ? doc.body[0].fweight : '' data-fstyle=doc.body[0].fstyle ? doc.body[0].fstyle : '')!=doc.body[0].txt? doc.body[0].txt.replace(/ /g,'&nbsp&nbsp') + '...' : doc.body[0].replace(/ /g,'&nbsp&nbsp') + '...'
+.container-fluid
+	.row
+		.article.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+			.row
+				.col-xs-12.col-sm-12.col-md-5.col-lg-4
+					h3 会议通知
+				include pager
+			.container-fluid
+				each doc in data
+					.no-side-boundry.panel.panel-info
+						.panel-heading
+							a.panel-title(onclick='showDetail("'+doc._id+'")')= doc.title
+						.panel-body
+							a=doc.date
+							p(data-fsize=doc.body[0].fsize ? doc.body[0].fsize : '' data-fweight=doc.body[0].fweight ? doc.body[0].fweight : '' data-fstyle=doc.body[0].fstyle ? doc.body[0].fstyle : '')!=doc.body[0].txt? doc.body[0].txt.replace(/ /g,'&nbsp&nbsp') + '...' : doc.body[0].replace(/ /g,'&nbsp&nbsp') + '...'

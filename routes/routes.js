@@ -99,7 +99,6 @@ MongoClient.connectAsync(url)
     .then(setRoutes)
     .catch(function(err) {
         logErr(err);
-        connectToMongo(urlIndex + 1);
     });
 
 var setRoutes = function(db) {

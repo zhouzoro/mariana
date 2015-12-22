@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var _ = require('underscore');
+var _ = require('lodash');
 var Promise = require('bluebird');
 
 var fs = require('fs-extra'); //fs-extra to mkdir, rename and remove
@@ -10,7 +10,8 @@ var mongoDb = require('mongodb');
 Promise.promisifyAll(mongoDb);
 var MongoClient = mongoDb.MongoClient;
 var ObjectID = require('mongodb').ObjectID;
-var url = 'mongodb://mariana:Mariana_mongoDB@210.77.91.195:27017/test';
+//mongorestore -h ds061464.mongolab.com:61464 -d zyoldb2 -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
+var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
 var coll_name = 'mariana'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
@@ -67,36 +68,11 @@ router.use(function(req, res, next) {
     next();
 });
 
-var renderCallBack = function(res) {
-    return function(err, html) {
-        if (err) {
-            res.end(err);
-            logErr(err);
-            io.sockets.in('sessionId').emit('log', err);
-            return;
-        }
-        res.send(html);
-    }
-}
 router.get('/', function(req, res) {
     var html = layoutJade();
     res.send(html);
 })
 
-router.get('/promise', function(req, res) {
-    res.end('end');
-    var readLog = fs.readFileAsync('../lib/mariana-logs.log');
-    var emitLog = readLog.then(function(logRaw) {
-        var logs = logRaw.toString().split('\n');
-        for (var i = 0; i < logs.length; i++) {
-            var newLog = JSON.parse(logs[i]);
-            io.sockets.in('sessionId').emit('log', newLog);
-        }
-    });
-    emitLog.then(function(val) {
-        console.log(val);
-    }).catch(logErr).catch(logErr);
-})
 router.get('/log', function(req, res) {
     res.render('log');
 })
@@ -112,17 +88,20 @@ router.get('/logs', function(req, res) {
     };
     readLog.then(emitLog).catch(logErr);
 });
-//connect to mongodb, and stay connected ever since.
-var connectToMongo = MongoClient.connectAsync(url);
-/*MongoClient.connect(url, function(err, db) {
-   if (err) {
-       winston.info(GetCurrentDatetime(), err);
-   }
-   /**function to gather info from db and then render the home page;
-    * takes No param, ends with res.render.
-    */
-connectToMongo.then(function(db) {
 
+//connect to mongodb, and stay connected ever since.
+var connectToMongo = function(Iurl) {
+    var urlIndex = Iurl % 3;
+    MongoClient.connectAsync(url[urlIndex]).then(setRoutes)
+        .catch(function(err) {
+            logErr(err);
+            connectToMongo(urlIndex + 1);
+        });
+}
+connectToMongo(0);
+
+var setRoutes = function(db) {
+    console.log('mongoDB connected!');
     var posts = db.collection(coll_name);
     var findPostsAsync = function(qFilter) {
         return new Promise(function(fulfill, reject) {
@@ -136,12 +115,9 @@ connectToMongo.then(function(db) {
                 posts.findAsync(qFilter.selector).then(function(cursor) {
                     return cursor.toArrayAsync()
                 }).then(function(docs) {
-                    docs = _.sortBy(docs, qFilter.sorter.iteratee);
-                    if (qFilter.sorter.desc) {
-                        docs.reverse()
-                    };
-                    docs = _.first(_.rest(docs, qFilter.skip), qFilter.limit);
+                    docs = _.slice(_.sortByOrder(docs, qFilter.sorter.iteratee, qFilter.sorter.order), qFilter.skip, qFilter.skip + qFilter.limit);
                     fulfill(docs);
+                    //console.log(docs);
                 }).catch(function(err) {
                     reject(err)
                 });
@@ -152,29 +128,30 @@ connectToMongo.then(function(db) {
     }
     var defaultSorter = function() {
         return {
-            iteratee: function(doc) {
-                return doc.date
-            },
-            desc: 1
+            iteratee: 'date',
+            order: 'desc'
         }
     }
     var defaultFilter = function() {
-        return {
-            selector: {
-                type: 'news'
-            },
-            skip: 0,
-            limit: 6,
-            sorter: defaultSorter()
+            return {
+                selector: {
+                    type: 'news'
+                },
+                skip: 0,
+                limit: 6,
+                sorter: defaultSorter()
+            }
         }
-    }
+        /**function to gather info from db and then render the home page;
+         * takes No param, ends with res.render.
+         */
     router.get('/home', function(req, res) {
         var qResults = {};
-        var sendHtml = function() {
+        var sendHtml = function(val) {
             var html = homeJade({ //render with datas
-                news: qResults['news'],
-                mtin: qResults['mtin'],
-                data: qResults['data']
+                news: val[0],
+                mtin: val[1],
+                data: val[2]
             });
             res.send(html);
         }
@@ -182,19 +159,13 @@ connectToMongo.then(function(db) {
         mtinFilter.selector.type = 'mtin';
         var dataFilter = defaultFilter();
         dataFilter.selector.type = 'data';
-        findPostsAsync(defaultFilter()).then(function(docs) {
-                qResults['news'] = docs
-            })
-            .then(findPostsAsync(mtinFilter).then(function(docs) {
-                qResults['mtin'] = docs
-            }))
-            .then(findPostsAsync(dataFilter).then(function(docs) {
-                qResults['data'] = docs
-            }))
-            .then(sendHtml).catch(function(err) {
-                res.send(err);
-                logErr(err);
-            });
+        var getDatas = [findPostsAsync(defaultFilter())];
+        getDatas.push(findPostsAsync(mtinFilter));
+        getDatas.push(findPostsAsync(dataFilter));
+        Promise.all(getDatas).then(sendHtml).catch(function(err) {
+            res.send(err);
+            logErr(err);
+        });
     });
 
     /**
@@ -203,30 +174,26 @@ connectToMongo.then(function(db) {
      * @param {[object]} res [render certain type of view to the client]
      */
     router.get('/records?', function(req, res) {
+        var pnum = req.query;
         var recFilter = defaultFilter();
-        recFilter.selector.type = req.query.rtype; //record type
-        recFilter.skip = parseInt(req.query.cnum) * parseInt(req.query.numpp); //whitch page of record
-        recFilter.limit = parseInt(req.query.numpp);
-        if (req.query.rtype === 'refe') {
+        recFilter.selector.type = pnum.rtype; //record type
+        recFilter.skip = parseInt(pnum.cnum) * parseInt(pnum.numpp); //whitch page of record
+        recFilter.limit = parseInt(pnum.numpp);
+        if (pnum.rtype === 'refe') {
             recFilter.sorter = {
-                type: 'serl',
-                desc: 1
+                iteratee: 'serl',
+                order: 'desc'
             }
             recFilter.limit = 999;
         }
         //do the query:
         findPostsAsync(recFilter).then(function(docs) {
             posts.countAsync({
-                type: req.query.rtype
+                type: pnum.rtype
             }).then(function(count) {
-                var tnum = Math.ceil(count / req.query.numpp); //count how many pages
-                var pnum = { //pass all page number infomation to the page, prepare for future query.
-                    type: req.query.rtype,
-                    cnum: req.query.cnum,
-                    numpp: req.query.numpp,
-                    tnum: tnum
-                };
-                var html = recsJade[req.query.rtype]({
+                var tnum = Math.ceil(count / pnum.numpp); //count how many pages
+                pnum['tnum'] = tnum;
+                var html = recsJade[pnum.rtype]({
                     data: docs,
                     pnum: pnum
                 });
@@ -268,7 +235,10 @@ connectToMongo.then(function(db) {
                         });
                         res.send(html);
                     })
-            }).catch(logErr);
+            }).catch(function(err) {
+                res.send(err);
+                logErr(err);
+            });
     });
 
     /**
@@ -278,7 +248,9 @@ connectToMongo.then(function(db) {
         posts.findOneAsync({
             type: 'about'
         }).then(function(data) {
-            var html = aboutJade();
+            var html = aboutJade({
+                data: data
+            });
             res.send(html);
         }).catch(function(err) {
             res.send(err);
@@ -333,10 +305,7 @@ connectToMongo.then(function(db) {
         staff.findAsync().then(function(cursor) {
             return cursor.toArrayAsync()
         }).then(function(docs) {
-            docs = _.sortBy(docs, function(doc) {
-                return doc.inst
-            });
-            docs = docs.reverse();
+            docs = _.sortByOrder(docs, 'inst', 'desc');
             var html = staffJade({
                 data: docs
             });
@@ -500,10 +469,10 @@ connectToMongo.then(function(db) {
         form.on('end', function() {
             if (bkeys.length) {
                 var pcount = [];
-                _.each(bkeys, function(bkey, index, list) {
+                _.each(bkeys, function(bkey, index) {
                     var tp = nbody[bkey].txt.split("\n");
                     pcount.push(tp.length);
-                    _.each(tp, function(val, index, list) {
+                    _.each(tp, function(val, index) {
                         if (val) {
                             pars.push({
                                 txt: val,
@@ -515,7 +484,7 @@ connectToMongo.then(function(db) {
                     })
                 })
                 if (ikeys.length) {
-                    _.each(ikeys, function(ikey, index, list) {
+                    _.each(ikeys, function(ikey, index) {
                         var c_pos = img[ikey].pos;
                         img[ikey].pos = 0;
                         for (var j = 0; j < c_pos; j++) {
@@ -563,7 +532,7 @@ connectToMongo.then(function(db) {
         });
         form.parse(req);
     });
-});
+}
 
 function GetCurrentDate() {
     var cdate = new Date();

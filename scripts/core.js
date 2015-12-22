@@ -12,10 +12,11 @@ var loadContent = function(url) {
     if ($('.main_body')[0]) {
         $('.main_body').hide();
     }
+    //$('#loader').modal('show');
+    showLoader();
     var newId = url.replace(/\//g, '_').replace(/=/g, '--').replace(/&/g, '_').replace('?', '-').replace(/"/g, '');
     if ($('#' + newId)[0]) {
         $('#' + newId)[0].show();
-        console.log('exists!');
     } else {
         $.get(url, function(html) {
             var newContent = $('<div>').attr({
@@ -31,9 +32,10 @@ var loadContent = function(url) {
             } else {
                 screenDownload();
             }
+            hideLoader();
+            //$('#loader').modal('hide');
         })
     }
-    window.location = '#' + newId;
 }
 var setFont = function() {
     $('p').each(function() {
@@ -45,6 +47,13 @@ var setFont = function() {
             })
         }
     })
+}
+var loader = $('<div>').attr('id','loader').append($('<span>').attr('class','loader').append($('<span>').attr('class','loader-inner')))
+var showLoader = function() {
+    $('#main_body').append(loader);
+}
+var hideLoader = function() {
+    $('#main_body').find('#loader').hide('slide');
 }
 var dLinks = [];
 var screenDownload = function() {

@@ -14,12 +14,16 @@ body {
     background-size: 100%;
     background-image: url('../sstyles/ico/uw1920-8.jpg');
     font-size: 15px;
-
-    background: #4C8BE8; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(#4C8BE8, #06274E); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(#4C8BE8, #06274E); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(#4C8BE8, #06274E); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(#4C8BE8, #06274E); /* Standard syntax */
+    background: #4C8BE8;
+    /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#4C8BE8, #06274E);
+    /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#4C8BE8, #06274E);
+    /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#4C8BE8, #06274E);
+    /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#4C8BE8, #06274E);
+    /* Standard syntax */
     background-repeat: no-repeat;
 }
 
@@ -30,12 +34,26 @@ header {
 p {
     word-wrap: break-word;
 }
-.whitetxt{
-    color:white;
+
+.loadie {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #000;
+    width: 0;
+    height: 4px;
+    -webkit-transition: width 0.5s ease-out;
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.25);
 }
+
+.whitetxt {
+    color: white;
+}
+
 .row {
     margin: 0px 0px 0px 0px;
 }
+
 .list-group {
     font-size: 15px;
 }
@@ -43,15 +61,17 @@ p {
 .container-fluid {
     padding: 0px 0px 0px 0px;
 }
-.navbar-fixed-top{
-   opacity: 0.9;
-   min-height: 64px;
+
+.navbar-fixed-top {
+    opacity: 0.9;
+    min-height: 64px;
 }
 
 .navbar-brand {
     font-size: 26px;
     display: block;
 }
+
 .navbar-link {
     font-size: 16px;
 }
@@ -59,6 +79,10 @@ p {
 .navbar-brand,
 .navbar-link {
     cursor: pointer;
+}
+
+.navbar-right {
+    margin-right: 0px;
 }
 
 .nav_icon {
@@ -100,9 +124,11 @@ p {
     min-height: 100%;
     object-fit: cover;
 }
-.carousel-caption{
+
+.carousel-caption {
     text-shadow: 1px 1px 7px #000;
 }
+
 .references {
     box-shadow: 3px 3px 10px 0px rgba(81, 81, 81, 0.4);
 }

@@ -96,7 +96,7 @@ router.get('/logs', function(req, res) {
 //connect to mongodb, and stay connected ever since.
 var connectToMongo = function(Iurl) {
     var urlIndex = Iurl % 3;
-    MongoClient.connectAsync(.MONGOLAB_URL).then(setRoutes)
+    MongoClient.connectAsync(process.env.MONGOLAB_URL).then(setRoutes)
         .catch(function(err) {
             logErr(err);
             connectToMongo(urlIndex + 1);

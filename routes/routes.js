@@ -12,6 +12,7 @@ var MongoClient = mongoDb.MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 //mongorestore -h ds061464.mongolab.com:61464 -d zyoldb2 -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
+//heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3
 var coll_name = 'mariana'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
@@ -92,7 +93,7 @@ router.get('/logs', function(req, res) {
 //connect to mongodb, and stay connected ever since.
 var connectToMongo = function(Iurl) {
     var urlIndex = Iurl % 3;
-    MongoClient.connectAsync(url[urlIndex]).then(setRoutes)
+    MongoClient.connectAsync(ENV['MONGOLAB_URL']).then(setRoutes)
         .catch(function(err) {
             logErr(err);
             connectToMongo(urlIndex + 1);

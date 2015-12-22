@@ -11,7 +11,8 @@ Promise.promisifyAll(mongoDb);
 var MongoClient = mongoDb.MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 //mongorestore -h ds061464.mongolab.com:61464 -d zyoldb2 -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
-var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
+var url = process.env.MONGOLAB_URL;
+//['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
 //heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2
 var coll_name = 'mariana'; //mongodb collection name
 
@@ -94,15 +95,12 @@ router.get('/logs', function(req, res) {
 });
 
 //connect to mongodb, and stay connected ever since.
-var connectToMongo = function(Iurl) {
-    var urlIndex = Iurl % 3;
-    MongoClient.connectAsync(process.env.MONGOLAB_URL).then(setRoutes)
-        .catch(function(err) {
-            logErr(err);
-            connectToMongo(urlIndex + 1);
-        });
-}
-connectToMongo(1);
+MongoClient.connectAsync(url)
+    .then(setRoutes)
+    .catch(function(err) {
+        logErr(err);
+        connectToMongo(urlIndex + 1);
+    });
 
 var setRoutes = function(db) {
     console.log('mongoDB connected!');

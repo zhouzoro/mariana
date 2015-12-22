@@ -98,7 +98,7 @@ var connectToMongo = function(Iurl) {
             connectToMongo(urlIndex + 1);
         });
 }
-connectToMongo(0);
+connectToMongo(1);
 
 var setRoutes = function(db) {
     console.log('mongoDB connected!');

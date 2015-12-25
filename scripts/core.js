@@ -1,5 +1,6 @@
 $(document).ready(function() {
     loadContent($('#main_body').data('init-url'));
+    //loadContent('http://localhost:5000/products');
     if (Cookies.get('username')) {
         setUser(Cookies.get('username'));
     } else {

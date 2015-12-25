@@ -76,6 +76,9 @@ p {
     font-size: 16px;
 }
 
+.navbar-link:hover{
+    font-size: 16px;
+}
 .navbar-brand,
 .navbar-link {
     cursor: pointer;

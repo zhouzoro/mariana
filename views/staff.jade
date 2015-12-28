@@ -1,25 +1,22 @@
-extends layout
-
-block main
-    .container-fluid
-        .row
-            .no-side-boundry.col-sm-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-                .staffs.row
-                    .col-sm-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-                        h3 人员目录
-                        table.table.table-striped
-                            thead
+.container-fluid
+    .row
+        .no-side-boundry.col-sm-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+            .staffs.row
+                .col-sm-12.col-sm-12.col-md-10.col-md-offset-1
+                    h3 人员目录
+                    table.table.table-striped
+                        thead
+                            tr
+                                th.td_num.col-xs-2.col-md-2 #
+                                th.td_name.col-xs-3.col-md-2 姓名
+                                th.td_posi.col-xs-7.col-md-7 工作单位
+                        tbody
+                            tr
+                                td.td_num 总负责人
+                                td.td_name 林间
+                                td.td_posi 特聘研究员/中国科学院南海海洋研究所
+                            each doc, index in data
                                 tr
-                                    th.td_num.col-xs-2.col-md-2 #
-                                    th.td_name.col-xs-3.col-md-2 姓名
-                                    th.td_posi.col-xs-7.col-md-7 工作单位
-                            tbody
-                                tr
-                                    td.td_num 总负责人
-                                    td.td_name 林间
-                                    td.td_posi 特聘研究员/中国科学院南海海洋研究所
-                                each doc, index in data
-                                    tr
-                                        td.td_num= index + 1
-                                        td.td_name= doc.name
-                                        td.td_posi= doc.inst
+                                    td.td_num= index + 1
+                                    td.td_name= doc.name
+                                    td.td_posi= doc.inst

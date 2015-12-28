@@ -1,12 +1,12 @@
-nav#pager.col-xs-12.col-sm-12.col-md-7.col-lg-8
+nav#pager
 	ul.pagination.pagination-sm
 		li
-			a.load_previous(src='../styles/ico/prev00.png' data-type=pnum.type data-cnum=pnum.cnum - 1 data-numpp=pnum.numpp)
+			a.load_previous(src='../styles/ico/prev00.png' data-type=pnum.rtype data-cnum=pnum.cnum - 1 data-numpp=pnum.numpp)
 				span &laquo;
 		li
 			a.pagenum(data-pagenum=pnum.cnum + 1)= pnum.cnum + 1
 			a /
 			a.tpagenum(data-pagenum=pnum.tnum)= pnum.tnum
 		li
-			a.load_next(src='../styles/ico/next00.png' data-type=pnum.type data-cnum=pnum.cnum + 1 data-numpp=pnum.numpp)
+			a.load_next(src='../styles/ico/next00.png' data-type=pnum.rtype data-cnum=pnum.cnum + 1 data-numpp=pnum.numpp)
 				span &raquo;

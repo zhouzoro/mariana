@@ -3,31 +3,57 @@
 
 html {
     margin: auto;
+    min-height: 100%;
 }
 
 body {
     font-family: Helvetica, Tahoma, Arial, STXihei, “华文细黑”, “Microsoft YaHei”, “微软雅黑”, SimSun, “宋体”, Heiti, “黑体”, sans-serif;
     /*background-color: #f5f6f1;*/
     min-height: 100%;
+    background-color: white;
     background-size: 100%;
-    background-repeat: no-repeat;
-    background-image: url('../styles/ico/uw1920-8.jpg');
     font-size: 15px;
+    /*background: #4C8BE8;
+    background-image: url('../sstyles/ico/uw1920-8.jpg');
+     For browsers that do not support gradients
+    background: -webkit-linear-gradient(#4C8BE8, #06274E);
+    /* For Safari 5.1 to 6.0
+    background: -o-linear-gradient(#4C8BE8, #06274E);
+    /* For Opera 11.1 to 12.0
+    background: -moz-linear-gradient(#4C8BE8, #06274E);
+    /* For Firefox 3.6 to 15
+    background: linear-gradient(#4C8BE8, #06274E);
+    /* Standard syntax
+    background-repeat: no-repeat;*/
 }
 
-header {
-    padding-top: 45px;
+/header {
+    min-height: 20px;
 }
 
 p {
     word-wrap: break-word;
 }
-.whitetxt{
-    color:white;
+#pager{
+    position: relative;
+    bottom: -30px;
 }
+#main_body{
+    min-height: 640px;
+    padding-bottom: 40px;
+}
+.pagination{
+    margin:0px;
+}
+
+.whitetxt {
+    color: white;
+}
+
 .row {
     margin: 0px 0px 0px 0px;
 }
+
 .list-group {
     font-size: 15px;
 }
@@ -35,19 +61,28 @@ p {
 .container-fluid {
     padding: 0px 0px 0px 0px;
 }
-.navbar-fixed-top{
-   opacity: 0.9;
+
+.navbar-fixed-top {
+    min-height: 24px;
 }
+
 .navbar-brand {
-    font-size: 26px;
+    font-size: 30px;
+    display: block;
 }
+
 .navbar-link {
     font-size: 16px;
 }
 
+
 .navbar-brand,
 .navbar-link {
     cursor: pointer;
+}
+
+.navbar-right {
+    margin-right: 0px;
 }
 
 .nav_icon {
@@ -68,7 +103,9 @@ p {
     padding-left: 0px;
     padding-right: 0px;
 }
-
+.border-bottom{
+    border-bottom: 1px solid lightgray;
+}
 #slr-inner {
     width: 100%;
     height: 490px;
@@ -78,10 +115,7 @@ p {
     height: 100%;
 }
 
-#slr {
-    margin-top: 0px;
-    margin-bottom: 20px;
-}
+
 
 .slr-img {
     margin: auto;
@@ -89,9 +123,11 @@ p {
     min-height: 100%;
     object-fit: cover;
 }
-.carousel-caption{
+
+.carousel-caption {
     text-shadow: 1px 1px 7px #000;
 }
+
 .references {
     box-shadow: 3px 3px 10px 0px rgba(81, 81, 81, 0.4);
 }
@@ -120,6 +156,7 @@ p {
 }
 
 .panel-title {
+    color:white;
     cursor: pointer;
 }
 
@@ -170,4 +207,78 @@ table.table {
 
 .detail_entry {
     cursor: pointer;
+}
+
+
+#d_title {
+    font-size: 26px;
+    text-align: center;
+    padding: auto;
+    margin-bottom: 24px;
+}
+
+#d_subt {
+    margin: auto;
+}
+
+#d_date,
+#d_source {
+    font-size: 13px;
+}
+
+.d_body {
+    font-size: 15px;
+    line-height: 150%;
+}
+
+
+
+.d_img {
+    width: 100%;
+}
+
+.d_figcap {
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#modify {
+    position: relative;
+    display:none;
+    top: 0px;
+    left: 40px;
+}
+
+.modify {
+    font-size: 16px;
+    margin-left: 6px;
+    color: #4B6683;
+    padding: 0px 6px 0px 6px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #4B6683;
+    display: inline-block;
+}
+.modify:hover {
+    color: white;
+    font-style: bold;
+    cursor: pointer;
+    background-color: #4B6683;
+}
+footer {
+    background: #222222;
+    min-height: 80px;
+    padding: 10px 0px 10px 0px;
+    margin: 0px 0px 0px 0px;
+    position: relative;
+    top: 10px;
+}
+
+footer p {
+    font-size: 13px;
+    text-align: center;
+    color: lightgray;
+    line-height: 150%;
+    margin: 0px 0px 0px 0px;
 }

@@ -1,85 +1,79 @@
-extends layout
-
-block more_style
-	link(rel='stylesheet' href='../styles/upload.css')
-
-block main
-	form#frm_upload(method="post" action="/add_new_post" enctype="multipart/form-data")
-		input#owner.invisible(name="owner", type="text")
-		#ul_title
-			.left_align_assis
-			textarea#title.upload_text(name="title" rows="1" autofocus required="required") 输入标题
-		#type_src
-			label.type_src 类型:
-				select#upload-type(name="type")
-					option(value="news") 新闻和进展
-					option(value="mtin") 会议通知
-					option(value="data") 数据和资料
-					option(value="refe") 参考文献
-				input#date(type="Date" name="date" value='2015-01-01' required="required")
-				input#source(type="text" name="source" value="输入文章/资料来源" required="required")
-		#upload_content
-			#ul_p1.div_content
-				.adjust_pos
-					img.bt_move.upward(src='../styles/ico/upward00.png' alt="move up" onclick='moveUpward')
-					img.bt_move.downward(src='../styles/ico/downward00.png' alt="move down")
-					img.bt_move.delete(src='../styles/ico/delete00.png' alt="delete")
-				.adjust_font
-					span.glyphicon.glyphicon-text-size
-					select.select_fs(name="fsize-txa0")
-						- var sizes = [12, 13, 14, 15, 16, 18, 20, 22, 24]
-						each val in sizes
-							option(value=val + 'px' selected=val==15? 'selected':'')= val
-					img.bt_font.font_bold(data-checked='n' src='../styles/ico/bold00.png' alt="font weight bold")
-					input.bold.invisible(type='text' name='fweight-txa0' value='normal')
-					img.bt_font.font_italic(data-checked='n' src='../styles/ico/italic00.png' alt="font style italic")
-					input.italic.invisible(type='text' name='fstyle-txa0' value='normal')
-				textarea#ta1.upload_text.upload_textarea(name="txt-txa0" rows="1") 正文
-		#ul_att
-		#ul_add
-			input#submit(type='image' src='../styles/ico/upload00.png' alt='提交')
-			img#add_par.bt_add(src='../styles/ico/text00.png' alt="add paragraph")
-			img#add_img.bt_add(src='../styles/ico/image00.png' alt="add image")
-			img#add_att.bt_add(src='../styles/ico/attachment00.png' alt="add attchment")
-		#user_guide
-			label 提示:
+link(rel='stylesheet' href='../styles/upload.css')
+form#frm_upload(method="post" action="/add_new_post" enctype="multipart/form-data")
+	input#owner.invisible(name="owner", type="text")
+	#ul_title
+		.left_align_assis
+		textarea#title.upload_text(name="title" rows="1" autofocus required="required") 输入标题
+	#type_src
+		label.type_src 类型:
+			select#upload-type(name="type")
+				option(value="news") 新闻和进展
+				option(value="mtin") 会议通知
+				option(value="data") 数据和资料
+				option(value="refe") 参考文献
+			input#date(type="Date" name="date" value='2015-01-01' required="required")
+			input#source(type="text" name="source" value="输入文章/资料来源" required="required")
+	#upload_content
+		#ul_p1.div_content
+			.adjust_pos
+				img.bt_move.upward(src='../styles/ico/upward00.png' alt="move up" onclick='moveUpward')
+				img.bt_move.downward(src='../styles/ico/downward00.png' alt="move down")
+				img.bt_move.delete(src='../styles/ico/delete00.png' alt="delete")
+			.adjust_font
+				span.glyphicon.glyphicon-text-size
+				select.select_fs(name="fsize-txa0")
+					- var sizes = [12, 13, 14, 15, 16, 18, 20, 22, 24]
+					each val in sizes
+						option(value=val + 'px' selected=val==15? 'selected':'')= val
+				img.bt_font.font_bold(data-checked='n' src='../styles/ico/bold00.png' alt="font weight bold")
+				input.bold.invisible(type='text' name='fweight-txa0' value='normal')
+				img.bt_font.font_italic(data-checked='n' src='../styles/ico/italic00.png' alt="font style italic")
+				input.italic.invisible(type='text' name='fstyle-txa0' value='normal')
+			textarea#ta1.upload_text.upload_textarea(name="txt-txa0" rows="1") 正文
+	#ul_att
+	#ul_add
+		input#submit(type='image' src='../styles/ico/upload00.png' alt='提交')
+		img#add_par.bt_add(src='../styles/ico/text00.png' alt="add paragraph")
+		img#add_img.bt_add(src='../styles/ico/image00.png' alt="add image")
+		img#add_att.bt_add(src='../styles/ico/attachment00.png' alt="add attchment")
+	#user_guide
+		label 提示:
+		br
+		.tips
+			label.tiplabel 1. 按键功能:
+			.insrow
+				img.tipimg(src='../styles/ico/upward00.png' alt="move up")
+				p.instruction 排序上升一格
+			.insrow
+				img.tipimg(src='../styles/ico/downward00.png' alt="move down")
+				p.instruction 排序下降一格
+			.insrow
+				img.tipimg(src='../styles/ico/delete00.png' alt="delete")
+				p.instruction 删除当前项
+			.insrow
+				img.tipimg(src='../styles/ico/upload00.png' alt="upload")
+				p.instruction 提交上传
+			.insrow
+				img.tipimg(src='../styles/ico/text00.png' alt="add paragraph")
+				p.instruction 添加段落
+			.insrow
+				img.tipimg(src='../styles/ico/image00.png' alt="add image")
+				p.instruction 添加图片
+			.insrow
+				img.tipimg(src='../styles/ico/attachment00.png' alt="add attchment")
+				p.instruction 添加附件
+		.tips
+			label.tiplabel 2. 输入:
 			br
-			.tips
-				label.tiplabel 1. 按键功能:
-				.insrow
-					img.tipimg(src='../styles/ico/upward00.png' alt="move up")
-					p.instruction 排序上升一格
-				.insrow
-					img.tipimg(src='../styles/ico/downward00.png' alt="move down")
-					p.instruction 排序下降一格
-				.insrow
-					img.tipimg(src='../styles/ico/delete00.png' alt="delete")
-					p.instruction 删除当前项
-				.insrow
-					img.tipimg(src='../styles/ico/upload00.png' alt="upload")
-					p.instruction 提交上传
-				.insrow
-					img.tipimg(src='../styles/ico/text00.png' alt="add paragraph")
-					p.instruction 添加段落
-				.insrow
-					img.tipimg(src='../styles/ico/image00.png' alt="add image")
-					p.instruction 添加图片
-				.insrow
-					img.tipimg(src='../styles/ico/attachment00.png' alt="add attchment")
-					p.instruction 添加附件
-			.tips
-				label.tiplabel 2. 输入:
+			p.instruction
+				|a. 正文文本框内可以包含任意数量的段落，注意缩进和换行的格式都会保留；
 				br
-				p.instruction
-					|a. 正文文本框内可以包含任意数量的段落，注意缩进和换行的格式都会保留；
-					br
-					|b. 图片说明可以不添加，默认的提示文字会自动清除；
-	#upload_dialog.modal.fade(tabindex='-1' role='dialog')
-			.modal-dialog(role='document')
-				.modal-content
-					.modal-body
-						.progress
-							#pecnum.progress-bar.progress-bar-striped(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
-append scripts
-	script(src='https://cdn.socket.io/socket.io-1.3.7.js')
-	script(src='../scripts/upload.js')
+				|b. 图片说明可以不添加，默认的提示文字会自动清除；
+#upload_dialog.modal.fade(tabindex='-1' role='dialog')
+		.modal-dialog(role='document')
+			.modal-content
+				.modal-body
+					.progress
+						#pecnum.progress-bar.progress-bar-striped(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100")
+script(src='https://cdn.socket.io/socket.io-1.3.7.js')
+script(src='../scripts/upload.js')

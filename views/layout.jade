@@ -4,13 +4,14 @@ html
 		title 马里亚纳海沟计划
 		meta(charset="utf-8")
 		meta(name="viewport" content="width=device-width, initial-scale=1")
-		link(rel='stylesheet' href='../styles/css/bootstrap.yeti.min.css')
-		//link(rel='stylesheet' href='https://cdn.jsdelivr.net/bootswatch/3.3.6/yeti/bootstrap.min.css')
+		//link(rel='stylesheet' href='../styles/css/bootstrap.yeti.min.css')
+		link(rel='stylesheet' href='https://cdn.jsdelivr.net/bootswatch/3.3.6/yeti/bootstrap.min.css')
 		link(rel='stylesheet' href='../styles/app.css')
-		block more_style
+		link(rel='stylesheet' href='../styles/upload.css')
+		link(rel='stylesheet' href='../styles/load.css')
 	body
 		header#header
-			nav.navbar.navbar-default.navbar-fixed-top
+			nav.navbar.navbar-default
 				.no-side-boundry.row
 					.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
 						.navbar-header
@@ -20,6 +21,7 @@ html
 								span.icon-bar
 								span.icon-bar
 							.navbar-brand(onclick="window.location='/'") 马里亚纳海沟计划
+						br
 						#navco.collapse.navbar-collapse
 							ul.nav.navbar-nav
 								li
@@ -36,13 +38,17 @@ html
 									a.navbar-link.a_nav(data-type='about') 关于
 							ul.nav.navbar-nav.navbar-right
 								li
-									a.navbar-link.login_entry(data-toggle='modal' data-target='#ldlog') 登录
+									a.navbar-link#login_entry(data-toggle='modal' data-target='#ldlog' title='log in')
+										span.glyphicon.glyphicon-log-in
 								li
-									a.navbar-link#upload_entry(onclick="window.location='/upload'")
+									a.navbar-link#upload_entry(title='upload')
+										span.glyphicon.glyphicon-cloud-upload
 								li
 									a.navbar-link#log_out
-		#ldlog.modal.fade(tabindex='-1' role='dialog')
-			.modal-dialog.modal-sm(role='document')
+										span.glyphicon.glyphicon-log-out
+		#main_body.row(data-init-url=initUrl ? initUrl : '/home')
+		#ldlog.modal(tabindex='-1' role='dialog')
+			.modal-dialog.modal-md(role='document')
 				.modal-content
 					.modal-header
 						button.close(type='button' data-dismiss='modal' aria-label='Close')
@@ -52,10 +58,14 @@ html
 						input#login_password.login_input.form-control(type="text" value="Password")
 					.modal-foot
 						button#login_submit.btn.btn-primary(type='button') Login
-		block main
 		block scripts
 			script(src='//code.jquery.com/jquery-2.1.4.min.js')
 			script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous")
+			//script(src='../scripts/jquery-2.1.4.min.js')
+			script(src='https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js')
+			//script(src='../scripts/bootstrap.min.js')
 			script(src='../scripts/js.cookie.js')
+			script(src='../scripts/prefixfree.min.js')
+			script(src='../scripts/vibrant.min.js')
 			script(src='../scripts/core.js')
-		//include footer
+		include footer

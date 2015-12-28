@@ -12,9 +12,9 @@ body {
     min-height: 100%;
     background-color: white;
     background-size: 100%;
-    background-image: url('../sstyles/ico/uw1920-8.jpg');
     font-size: 15px;
     /*background: #4C8BE8;
+    background-image: url('../sstyles/ico/uw1920-8.jpg');
      For browsers that do not support gradients
     background: -webkit-linear-gradient(#4C8BE8, #06274E);
     /* For Safari 5.1 to 6.0
@@ -34,16 +34,16 @@ body {
 p {
     word-wrap: break-word;
 }
-
-.loadie {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: #000;
-    width: 0;
-    height: 4px;
-    -webkit-transition: width 0.5s ease-out;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.25);
+#pager{
+    position: relative;
+    bottom: -30px;
+}
+#main_body{
+    min-height: 640px;
+    padding-bottom: 40px;
+}
+.pagination{
+    margin:0px;
 }
 
 .whitetxt {
@@ -67,7 +67,7 @@ p {
 }
 
 .navbar-brand {
-    font-size: 26px;
+    font-size: 30px;
     display: block;
 }
 
@@ -75,9 +75,6 @@ p {
     font-size: 16px;
 }
 
-.navbar-link:hover {
-    font-size: 16px;
-}
 
 .navbar-brand,
 .navbar-link {
@@ -118,10 +115,7 @@ p {
     height: 100%;
 }
 
-#slr {
-    margin-top: 0px;
-    margin-bottom: 20px;
-}
+
 
 .slr-img {
     margin: auto;
@@ -162,6 +156,7 @@ p {
 }
 
 .panel-title {
+    color:white;
     cursor: pointer;
 }
 
@@ -270,4 +265,20 @@ table.table {
     font-style: bold;
     cursor: pointer;
     background-color: #4B6683;
+}
+footer {
+    background: #222222;
+    min-height: 80px;
+    padding: 10px 0px 10px 0px;
+    margin: 0px 0px 0px 0px;
+    position: relative;
+    top: 10px;
+}
+
+footer p {
+    font-size: 13px;
+    text-align: center;
+    color: lightgray;
+    line-height: 150%;
+    margin: 0px 0px 0px 0px;
 }

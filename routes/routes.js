@@ -14,7 +14,8 @@ var ObjectID = require('mongodb').ObjectID;
 //mongorestore -d test -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 //
 //var url = process.env.MONGOLAB_URL || 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2';
-var url = process.env.MONGOLAB_URL ||'mongodb://127.0.0.1:27017/dsgdb';
+var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:27017/dsgdb';
+console.log(process.env.MONGO_URL);
 //var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
 //heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1
 var coll_name = 'mariana'; //mongodb collection name
@@ -61,6 +62,19 @@ var readLog = fs.readFileAsync('../lib/mariana-logs.log');
 /**
  * middleware function to log info
  */
+
+router.use(function(req, res, next) {
+    if (!req.headers['x-requested-with']) {
+        var reqUrl = req.originalUrl;
+        console.log(reqUrl);
+        var html = layoutJade({
+            initUrl: reqUrl === '/' ? null : reqUrl
+        });
+        res.send(html);
+    } else {
+        next();
+    }
+});
 router.use(function(req, res, next) {
     winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
     var readLog = fs.readFileAsync('../lib/mariana-logs.log');
@@ -77,9 +91,12 @@ router.get('/', function(req, res) {
     var html = layoutJade();
     res.send(html);
 })
-
+router.get('/ajax', function(req, res) {
+    console.log(req.headers['x-requested-with']);
+    res.send(req.headers['x-requested-with']);
+})
 router.get('/env', function(req, res) {
-    res.send(process.env.MONGOLAB_URL);
+    res.send(process.env.MONGO_URL);
 })
 router.get('/log', function(req, res) {
     res.render('log');

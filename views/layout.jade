@@ -21,7 +21,7 @@ html
 								span.icon-bar
 								span.icon-bar
 							.navbar-brand(onclick="window.location='/'") 马里亚纳海沟计划
-						//br
+						br
 						#navco.collapse.navbar-collapse
 							ul.nav.navbar-nav
 								li
@@ -46,8 +46,8 @@ html
 								li
 									a.navbar-link#log_out
 										span.glyphicon.glyphicon-log-out
-		#main_body(data-init-url=initUrl ? initUrl : '/home')
-		#ldlog.modal.fade(tabindex='-1' role='dialog')
+		#main_body.row(data-init-url=initUrl ? initUrl : '/home')
+		#ldlog.modal(tabindex='-1' role='dialog')
 			.modal-dialog.modal-md(role='document')
 				.modal-content
 					.modal-header
@@ -65,7 +65,7 @@ html
 			script(src='https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js')
 			//script(src='../scripts/bootstrap.min.js')
 			script(src='../scripts/js.cookie.js')
-			script(src='https://cdn.jsdelivr.net/prefixfree/1.0.7/prefixfree.min.js')
+			script(src='../scripts/prefixfree.min.js')
 			script(src='../scripts/vibrant.min.js')
 			script(src='../scripts/core.js')
 		include footer

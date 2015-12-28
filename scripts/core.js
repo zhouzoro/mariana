@@ -1,6 +1,6 @@
 $(document).ready(function() {
     loadContent($('#main_body').data('init-url'));
-    //loadContent('http://localhost:5000/products');
+    //loadContent('/ajax');
     if (Cookies.get('username')) {
         setUser(Cookies.get('username'));
     } else {
@@ -10,37 +10,30 @@ $(document).ready(function() {
 })
 var loadContent = function(url) {
     var main = $('#main_body');
-    if ($('.main_body')[0]) {
-        $('.main_body').hide();
-    }
+    main.find('*').remove();
+    if (url !== '/home') history.pushState(null, null, url);
     //$('#loader').modal('show');
     showLoader();
-    var newId = url.replace(/\//g, '_').replace(/=/g, '--').replace(/&/g, '_').replace('?', '-').replace(/"/g, '');
-    if ($('#' + newId)[0]) {
-        $('#' + newId).show();
-    } else {
-        $.get(url, function(html) {
-            var newContent = $('<div>').attr({
-                'id': newId,
-                'class': 'main_body'
-            })
-            main.html(newContent.html(html));
-            $('.a_nav').each(setNav);
-            setPageNav();
-            setFont();
-            if (Cookies.get('username')) {
-                setDelete();
-            } else {
-                screenDownload();
-            }
-            $('.active img').on('load', setColor);
-            $('#slr').on('slid.bs.carousel', setColor);
+    //var newId = url.replace(/\//g, '_').replace(/=/g, '--').replace(/&/g, '_').replace('?', '-').replace(/"/g, '');
+    $.get(url, function(html) {
+        var newContent = $('<div>').attr('class', 'main_body')
+        main.html(newContent.html(html));
+        $('.a_nav').each(setNav);
+        setPageNav();
+        setPanelColor()
+        setFont();
+        if (Cookies.get('username')) {
+            setDelete();
+        } else {
+            screenDownload();
+        }
+        $('.active img').on('load', setColor);
+        $('#slr').on('slid.bs.carousel', setColor);
 
-            hideLoader();
-            window.location = '#' + newId;
-            //$('#loader').modal('hide');
-        })
-    }
+        hideLoader();
+        //window.location = '#' + newId;
+        //$('#loader').modal('hide');
+    })
 }
 var setFont = function() {
     $('p').each(function() {
@@ -65,7 +58,26 @@ var setColor = function() {
     //$('#carousel').css('box-shadow', '0px 0px 10px 1px ' + rgbaColor);
 
 }
-var loader = $('<div>').attr('id', 'loader').append($('<span>').attr('class', 'loader').append($('<span>').attr('class', 'loader-inner')))
+var setPanelColor = function() {
+    $('.panel-body img').load(function() {
+        var img = $(this)[0];
+        var vibrant = new Vibrant(img);
+        var panelBody = $(this).parent('.panel-body');
+        var panelHead = panelBody.prev('.panel-heading');
+        var panelTtile = panelHead.find('.panel-title');
+        var muted = vibrant.MutedSwatch.rgb;
+        var rgbaColor = 'rgba(' + muted[0] + ',' + muted[1] + ',' + muted[2] + ', 0.5)';
+        panelBody.css({
+            'background-color': rgbaColor,
+            'box-shadow': 'inset 0px 0px 400px 400px rgba(199,199,199,0.4)'
+        });
+        panelHead.css({
+            'background-color': vibrant.VibrantSwatch.rgb,
+            'box-shadow': 'inset 0px 0px 400px 400px rgba(199,199,199,0.4)'
+        });
+    })
+}
+var loader = $('<div>').attr('id', 'loader').append($('<span>').attr('class', 'loader .row').append($('<span>').attr('class', 'loader-inner')))
 var showLoader = function() {
     $('#main_body').append(loader);
 }
@@ -114,7 +126,6 @@ var logOut = function() {
 var setNav = function() {
     $(this).off('click');
     var pathname = window.location.pathname;
-    console.log(pathname);
     var cpath = pathname.substring(pathname.lastIndexOf('/') + 1);
     if (cpath == 'records') {
         var tempath = window.location.search.substr(7, 8);

@@ -6,7 +6,7 @@ $(document).ready(function() {
     } else {
         setLogin();
     }
-    window.onscroll = windowOnScroll;
+    //window.onscroll = windowOnScroll;
 })
 var loadContent = function(url) {
     var main = $('#main_body');
@@ -17,7 +17,7 @@ var loadContent = function(url) {
     showLoader();
     var newId = url.replace(/\//g, '_').replace(/=/g, '--').replace(/&/g, '_').replace('?', '-').replace(/"/g, '');
     if ($('#' + newId)[0]) {
-        $('#' + newId)[0].show();
+        $('#' + newId).show();
     } else {
         $.get(url, function(html) {
             var newContent = $('<div>').attr({
@@ -33,7 +33,11 @@ var loadContent = function(url) {
             } else {
                 screenDownload();
             }
+            $('.active img').on('load', setColor);
+            $('#slr').on('slid.bs.carousel', setColor);
+
             hideLoader();
+            window.location = '#' + newId;
             //$('#loader').modal('hide');
         })
     }
@@ -49,7 +53,19 @@ var setFont = function() {
         }
     })
 }
-var loader = $('<div>').attr('id','loader').append($('<span>').attr('class','loader').append($('<span>').attr('class','loader-inner')))
+
+var setColor = function() {
+    var index = $('.item.active').data('index');
+    var img = $('.active img')[0];
+    var vibrant = new Vibrant(img);
+    $('#slr-container').css({
+        'background-color': vibrant.MutedSwatch.rgb,
+        'color': vibrant.VibrantSwatch.rgb
+    });
+    //$('#carousel').css('box-shadow', '0px 0px 10px 1px ' + rgbaColor);
+
+}
+var loader = $('<div>').attr('id', 'loader').append($('<span>').attr('class', 'loader').append($('<span>').attr('class', 'loader-inner')))
 var showLoader = function() {
     $('#main_body').append(loader);
 }
@@ -58,7 +74,6 @@ var hideLoader = function() {
 }
 var dLinks = [];
 var screenDownload = function() {
-    console.log('screen');
     $('.downloadlink').each(function() {
         dLinks.push({
             linkid: this.id,
@@ -96,9 +111,10 @@ var logOut = function() {
     Cookies.remove('username');
     setLogin();
 }
-setNav = function() {
+var setNav = function() {
     $(this).off('click');
     var pathname = window.location.pathname;
+    console.log(pathname);
     var cpath = pathname.substring(pathname.lastIndexOf('/') + 1);
     if (cpath == 'records') {
         var tempath = window.location.search.substr(7, 8);
@@ -181,7 +197,6 @@ var setNews = function() {
     loadContent(newsUrl);
 }
 var showDetail = function(id) {
-    console.log(id);
     var detailsUrl = '/details?_id=' + id;
     loadContent(detailsUrl);
 }
@@ -213,33 +228,13 @@ var setPageNav = function() {
 }
 var windowOnScroll = function() {
     if (checkVisible($('header'))) {
-        $('.div_pagetitle').css({
-            'position': 'relative',
-            'top': '4px',
-            'height': '60px'
-        });
-        $('#navs').css({
-            'position': 'relative',
-            'bottom': '-15px'
-        });
+        $('.navbar').removeClass('navbar-fixed-top');
     } else {
-        $('.div_pagetitle').css({
-            'position': 'fixed',
-            'top': '0px',
-            'height': '46px',
-            'left': '0px'
-        });
-        $('#page_title').css({
-            'top': '-2px'
-        });
-        $('#navs').css({
-            'position': 'relative',
-            'bottom': '0px'
-        });
+        $('.navbar').addClass('navbar-fixed-top');
     }
 }
 
-checkVisible = function(elm, evalType) {
+var checkVisible = function(elm, evalType) {
     evalType = evalType || 'visible';
 
     var vpH = $(window).height(), // Viewport Height

@@ -1,4 +1,4 @@
-.container-fluid
+#slr-container.container-fluid
 	.no-side-boundry.row
 		.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
 			//.jumbotron
@@ -34,35 +34,24 @@
 					span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
 					span.sr-only Next
 #home-below.container-fluid
-		.no-side-boundry.row
-			.no-side-boundry.col-xs-12.col-sm-12.col-md-5.col-md-offset-1.col-lg-4.col-lg-offset-2
-				.panel.panel-default
-					.panel-heading
-						a.panel-title.a_nav(data-type='mtin') 会议安排
-					.panel-body
-						ul.list-group
-							each doc, index in mtin
-								li.list-group-item
-									.row
-										.div_datelabel.col-md-3
-											a.datelabel= doc.date.substr(0, 10)
-										.div_dlinklabel.col-md-9
-											p.dlinklabel( onclick='showDetail("'+doc._id+'")')= doc.title
-			.no-side-boundry.col-xs-12.col-sm-12.col-md-5.col-lg-4
-				.panel.panel-default
-					.panel-heading
-						a.panel-title.a_nav(data-type='data') 资源下载
-					.panel-body
-						ul.list-group
-							each doc, index in data
-								li.list-group-item
-									.row
-										.div_datelabel.col-md-3
-											a.datelabel= doc.date.substr(0, 10)
-										.div_dlinklabel.col-md-9
-											p.dlinklabel= doc.title
-										.div_downloadLink.col-md-9.col-md-offset-3
-											if doc.att.length
-												- var downloadPath = doc.att[0]
-												- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
-												a.downloadlink(id=index href='../../' + downloadPath download=fileName)= fileName
+	.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+		h3.a_nav(data-type='mtin') 会议安排
+		each doc, index in mtin
+				.row
+					.div_datelabel.col-sm-3.col-md-3
+						a.datelabel= doc.date.substr(0, 10)
+					.div_dlinklabel.col-sm-9.col-md-9
+						p.dlinklabel( onclick='showDetail("'+doc._id+'")')= doc.title
+	.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+		h3.a_nav(data-type='data') 资源下载
+		each doc, index in data
+				.row
+					.div_datelabel.col-sm-3.col-md-3
+						a.datelabel= doc.date.substr(0, 10)
+					.div_dlinklabel.col-sm-6.col-md-6
+						p.dlinklabel= doc.title
+					.div_downloadLink.col-sm-3.col-md-3
+						if doc.att.length
+							- var downloadPath = doc.att[0]
+							- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
+							a.downloadlink(id=index href='../../' + downloadPath download=fileName)= fileName

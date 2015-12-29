@@ -4,7 +4,7 @@ nav#pager
 			a.load_previous(src='../styles/ico/prev00.png' data-type=pnum.rtype data-cnum=pnum.cnum - 1 data-numpp=pnum.numpp)
 				span &laquo;
 		li
-			a.pagenum(data-pagenum=pnum.cnum + 1)= pnum.cnum + 1
+			a.pagenum(data-pagenum=pnum.cnum++)= pnum.cnum++
 			a /
 			a.tpagenum(data-pagenum=pnum.tnum)= pnum.tnum
 		li

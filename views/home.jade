@@ -38,17 +38,17 @@
 		h4.a_nav(data-type='mtin') 会议安排
 		each doc, index in mtin
 				.row
-					.div_datelabel.col-sm-3.col-md-3
+					.div_datelabel.col-sm-3.col-md-2
 						a.datelabel= doc.date.substr(0, 10)
-					.div_dlinklabel.col-sm-9.col-md-9
+					.cursor-pointer.div_dlinklabel.col-sm-9.col-md-10
 						p.dlinklabel( onclick='showDetail("'+doc._id+'")')= doc.title
 	.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
 		h4.a_nav(data-type='data') 资源下载
 		each doc, index in data
 				.row
-					.div_datelabel.col-sm-3.col-md-3
+					.div_datelabel.col-sm-3.col-md-2
 						a.datelabel= doc.date.substr(0, 10)
-					.div_dlinklabel.col-sm-6.col-md-6
+					.div_dlinklabel.col-sm-6.col-md-7
 						p.dlinklabel= doc.title
 					.div_downloadLink.col-sm-3.col-md-3
 						if doc.att.length

@@ -42,6 +42,11 @@ p {
     min-height: 640px;
     padding-bottom: 40px;
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
 .pagination{
     margin:0px;
 }

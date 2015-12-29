@@ -18,6 +18,7 @@ var loadContent = function(url) {
     $.get(url, function(html) {
         var newContent = $('<div>').attr('class', 'main_body')
         main.html(newContent.html(html));
+        $('.carousel').carousel();
         $('.a_nav').each(setNav);
         setPageNav();
         setPanelColor()
@@ -65,15 +66,15 @@ var setPanelColor = function() {
         var panelBody = $(this).parent('.panel-body');
         var panelHead = panelBody.prev('.panel-heading');
         var panelTtile = panelHead.find('.panel-title');
-        var muted = vibrant.MutedSwatch.rgb;
-        var rgbaColor = 'rgba(' + muted[0] + ',' + muted[1] + ',' + muted[2] + ', 0.5)';
+        var muted = vibrant.VibrantSwatch.rgb;
+        var rgbaColor = 'rgba(' + muted[0] + ',' + muted[1] + ',' + muted[2] + ', 0.4)';
         panelBody.css({
             'background-color': rgbaColor,
             'box-shadow': 'inset 0px 0px 400px 400px rgba(199,199,199,0.4)'
         });
         panelHead.css({
             'background-color': vibrant.VibrantSwatch.rgb,
-            'box-shadow': 'inset 0px 0px 400px 400px rgba(199,199,199,0.4)'
+            'box-shadow': 'inset 0px 0px 400px 400px rgba(199,199,199,0.2)'
         });
     })
 }

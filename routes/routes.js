@@ -14,8 +14,7 @@ var ObjectID = require('mongodb').ObjectID;
 //mongorestore -d test -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 //
 //var url = process.env.MONGOLAB_URL || 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2';
-var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:27017/dsgdb';
-console.log(process.env.MONGO_URL);
+var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:37127/test';
 //var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
 //heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1
 var coll_name = 'mariana'; //mongodb collection name

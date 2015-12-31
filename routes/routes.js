@@ -9,7 +9,7 @@ Promise.promisifyAll(fs);
 var mongoDb = require('mongodb');
 Promise.promisifyAll(mongoDb);
 var MongoClient = mongoDb.MongoClient;
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = mongoDb.ObjectID;
 //mongorestore -h ds061464.mongolab.com:61464 -d zyoldb2 -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 //mongorestore -d test -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 //
@@ -63,6 +63,20 @@ var readLog = fs.readFileAsync('../lib/mariana-logs.log');
  */
 
 router.use(function(req, res, next) {
+    winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
+    var readLog = fs.readFileAsync('../lib/mariana-logs.log');
+    var emitLog = function(logRaw) {
+        var logs = logRaw.toString().split('\n');
+        var newLog = JSON.parse(logs[logs.length - 2]);
+        io.sockets.in('sessionId').emit('log', newLog);
+    };
+    readLog.then(emitLog).catch(logErr);
+    next();
+});
+/**
+ * middleware function to check if it's a ajax req
+ */
+router.use(function(req, res, next) {
     if (!req.headers['x-requested-with']) {
         var reqUrl = req.originalUrl;
         console.log(reqUrl);
@@ -73,17 +87,6 @@ router.use(function(req, res, next) {
     } else {
         next();
     }
-});
-router.use(function(req, res, next) {
-    winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
-    var readLog = fs.readFileAsync('../lib/mariana-logs.log');
-    var emitLog = function(logRaw) {
-        var logs = logRaw.toString().split('\n');
-        var newLog = JSON.parse(logs[logs.length - 2]);
-        io.sockets.in('sessionId').emit('log', newLog);
-    };
-    readLog.then(emitLog).catch(logErr);
-    next();
 });
 
 router.get('/', function(req, res) {

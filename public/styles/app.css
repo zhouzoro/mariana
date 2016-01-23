@@ -1,0 +1,312 @@
+@charset "UTF-8";
+html {
+  margin: auto;
+  min-height: 100%;
+}
+
+body {
+  font-family: Helvetica, Tahoma, Arial, STXihei, “华文细黑”, “Microsoft YaHei”, “微软雅黑”, SimSun, “宋体”, Heiti, “黑体”, sans-serif;
+  min-height: 100%;
+  min-width: 768px;
+  background-color: white;
+  font-size: 15px;
+}
+
+header {
+  min-height: 40px;
+  height: 540px;
+  background-image: url("/images/mariana00.jpg");
+  background-size: cover;
+  transition: height 0.8s;
+  box-shadow: inset 0px 0px 49px 0px rgba(0, 0, 0, 0.4);
+}
+
+p {
+  word-wrap: break-word;
+}
+
+#logo-placeholder {
+  height: 31px;
+}
+
+.navbar-brand {
+  font-size: 30px;
+  position: relative;
+  bottom: 24px;
+  width: 329px;
+  height: 40px;
+  padding: 0px 48px 0px 0px;
+  margin-left: 49px;
+  display: inline-block;
+}
+.navbar-brand #logo-img {
+  opacity: 0.8;
+  width: 100%;
+  max-width: 256px;
+}
+.navbar-brand #logo-img:hover {
+  opacity: 1;
+}
+
+#loader {
+  z-index: 3;
+  position: absolute;
+  width: 100%;
+  transition: height 0.7s;
+  overflow: hidden;
+}
+
+#cv-app-1 {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+#about {
+  color: white;
+  position: absolute;
+  top: 80px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding-bottom: 24px;
+}
+#about p {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.home-sample {
+  margin-top: 16px;
+}
+
+.nav-btn.ui.icon.left.button.basic {
+  margin: 8px 8px 2px 8px;
+}
+
+.nav li a:hover {
+  border-bottom: 2px solid white;
+}
+
+#pager {
+  text-align: center;
+}
+#pager a {
+  position: absolute;
+  cursor: pointer;
+}
+#pager .load_previous {
+  left: 0px;
+}
+#pager .load_next {
+  right: 0px;
+}
+
+.item {
+  padding: 4px;
+}
+
+.disabled {
+  color: gray;
+}
+
+#main_body {
+  padding-bottom: 40px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.row {
+  width: 100%;
+  margin: 0px 0px 0px 0px;
+}
+
+.navbar {
+  z-index: 1;
+  border-radius: 0px;
+  border: none;
+  background-color: transparent;
+}
+
+#nav-content {
+  z-index: 2;
+}
+
+#blur-bg {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  -webkit-filter: blur(1px);
+          filter: blur(1px);
+}
+
+#ldlog {
+  text-align: center;
+}
+
+#ldlog .input input {
+  margin: 4px;
+}
+
+.navbar-link {
+  font-size: 16px;
+}
+
+.navbar-brand,
+.navbar-link {
+  cursor: pointer;
+}
+
+.navbar-right {
+  margin-right: 0px;
+}
+
+.nav_icon {
+  width: 16px;
+  height: 16px;
+  margin: 0px 2px -2px 2px;
+}
+
+.navbar-toggle {
+  float: left;
+  margin-left: 5px;
+  margin-right: 0px;
+}
+
+.no-side-boundry {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.border-bottom {
+  border-bottom: 1px solid lightgray;
+}
+
+#slr-inner {
+  width: 100%;
+  height: 490px;
+}
+#slr-inner .item {
+  height: 100%;
+}
+
+.slr-img {
+  margin: auto;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  text-shadow: 1px 1px 7px #000;
+}
+
+.references {
+  box-shadow: 3px 3px 10px 0px rgba(81, 81, 81, 0.4);
+}
+
+#home-below {
+  padding: 0px;
+  width: 100%;
+}
+
+.article {
+  padding: 20px 0px 40px 0px;
+  background-color: white;
+  color: black;
+}
+
+table.table {
+  font-size: 15px;
+}
+
+#login_submit {
+  margin: 10px;
+}
+
+.staffs {
+  margin: auto;
+  background-color: white;
+  color: black;
+}
+
+.refe_row {
+  display: block;
+  padding: 4px;
+}
+
+.refesq {
+  margin-right: 10px;
+}
+
+#d_title {
+  font-size: 26px;
+  text-align: center;
+  padding: auto;
+  margin-bottom: 24px;
+}
+
+#d_date,
+#d_source {
+  font-size: 13px;
+  margin-left: 24px;
+}
+
+.d_body {
+  font-size: 15px;
+  line-height: 150%;
+}
+
+.d_img {
+  width: 100%;
+}
+
+.d_figcap {
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#modify {
+  position: relative;
+  display: none;
+  top: 0px;
+  left: 40px;
+}
+
+.modify {
+  font-size: 16px;
+  margin-left: 6px;
+  color: #4B6683;
+  padding: 0px 6px 0px 6px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #4B6683;
+  display: inline-block;
+}
+
+.modify:hover {
+  color: white;
+  font-style: bold;
+  cursor: pointer;
+  background-color: #4B6683;
+}
+
+footer {
+  background: #222;
+  min-height: 80px;
+  padding: 10px 0px 10px 0px;
+  margin: 0px 0px 0px 0px;
+  position: relative;
+  top: 10px;
+}
+footer p {
+  font-size: 13px;
+  text-align: center;
+  color: lightgray;
+  line-height: 150%;
+  margin: 0px 0px 0px 0px;
+}

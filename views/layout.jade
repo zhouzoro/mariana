@@ -4,68 +4,77 @@ html
 		title 马里亚纳海沟计划
 		meta(charset="utf-8")
 		meta(name="viewport" content="width=device-width, initial-scale=1")
-		//link(rel='stylesheet' href='../styles/css/bootstrap.yeti.min.css')
-		link(rel='stylesheet' href='https://cdn.jsdelivr.net/bootswatch/3.3.6/yeti/bootstrap.min.css')
-		link(rel='stylesheet' href='../styles/app.css')
-		link(rel='stylesheet' href='../styles/upload.css')
-		link(rel='stylesheet' href='../styles/load.css')
+		link(rel='stylesheet' href='/styles/bootstrap.min.css')
+		link(rel='stylesheet' href='/semantic/semantic.min.css')
+		//link(rel='stylesheet' href='https://cdn.jsdelivr.net/semantic-ui/2.1.8/semantic.min.css')
+		link(rel='stylesheet' href='/styles/app.min.css')
+		//link(rel='stylesheet' href='/styles/upload.css')
 	body
+		#loader
+			.ui.active.dimmer
+				.ui.text.loader Loading
 		header#header
-			nav.navbar.navbar-default
-				.no-side-boundry.row
-					.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-						.navbar-header
-							button.navbar-toggle.collapsed.navbar-left(type='button' data-toggle="collapse" data-target="#navco" aria-expanded="false")
-								span.sr-only Toggle navigation
-								span.icon-bar
-								span.icon-bar
-								span.icon-bar
-							.navbar-brand(onclick="window.location='/'") 马里亚纳海沟计划
-						br
-						#navco.collapse.navbar-collapse
-							ul.nav.navbar-nav
-								li
-									a.navbar-link.a_nav(data-type='news') 新闻进展
-								li
-									a.navbar-link.a_nav(data-type='mtin') 会议安排
-								li
-									a.navbar-link.a_nav(data-type='data') 资源下载
-								li
-									a.navbar-link.a_nav(data-type='refe') 参考文献
-								li
-									a.navbar-link.a_nav(data-type='staff') 人员名单
-								li
-									a.navbar-link.a_nav(data-type='about') 关于
-							ul.nav.navbar-nav.navbar-right
-								li
-									a.navbar-link#login_entry(data-toggle='modal' data-target='#ldlog' title='log in')
-										span.glyphicon.glyphicon-log-in
-								li
-									a.navbar-link#upload_entry(title='upload')
-										span.glyphicon.glyphicon-cloud-upload
-								li
-									a.navbar-link#log_out
-										span.glyphicon.glyphicon-log-out
+			canvas#cv-app-1
+			nav.navbar.navbar-inverse.row.no-side-boundry
+				#logo-placeholder
+				#blur-bg
+				//.col-xs-12.col-sm-12.col-md-3.col-lg-2
+					.navbar-brand.a_nav.col-xs-12.col-sm-12.col-md-3.col-lg-2(data-type='home')
+						img#logo-img(src='/styles/ico/Drawing.png')
+				#nav-content
+					//.no-side-boundry.col-xs-12.col-sm-12.col-md-9.col-lg-8
+					.navbar-header
+						.navbar-toggle.collapsed.navbar-left(type='button' data-toggle="collapse" data-target="#navco" aria-expanded="false")
+							span.sr-only Toggle navigation
+							span.icon-bar
+							span.icon-bar
+							span.icon-bar
+					.navbar-brand.a_nav.col-xs-12.col-sm-12.col-md-3.col-lg-2(data-type='home')
+						img#logo-img(src='/styles/ico/Drawing.png')
+					#navco.collapse.navbar-collapse
+						ul.nav.navbar-nav
+							li: a.navbar-link.a_nav(data-type='news') 新闻进展
+							li: a.navbar-link.a_nav(data-type='mtin') 会议安排
+							li: a.navbar-link.a_nav(data-type='data') 资源下载
+							li: a.navbar-link.a_nav(data-type='refe') 参考文献
+							li: a.navbar-link.a_nav(data-type='staff') 人员名单
+							li: a.navbar-link.a_nav(data-type='about') 关于
+						ul.nav.navbar-nav.navbar-right
+							li: #login_entry.nav-btn.ui.icon.left.button.basic.green.small 登录
+									i.ui.icon.sign.in
+							li: #upload_entry.nav-btn.ui.icon.left.button.basic.blue.small 上传
+									i.ui.icon.upload
+							li: #log_out.nav-btn.ui.icon.left.button.basic.red.small 退出
+									i.ui.icon.sign.out
 		#main_body.row(data-init-url=initUrl ? initUrl : '/home')
-		#ldlog.modal(tabindex='-1' role='dialog')
-			.modal-dialog.modal-md(role='document')
-				.modal-content
-					.modal-header
-						button.close(type='button' data-dismiss='modal' aria-label='Close')
-							span(aria-hidden='true') &times;
-					.modal-body
-						input#login_username.login_input.form-control(type="text" value="UserName" autofocus)
-						input#login_password.login_input.form-control(type="text" value="Password")
-					.modal-foot
-						button#login_submit.btn.btn-primary(type='button') Login
+		#ldlog.ui.modal.basic
+			.ui.left.icon.input
+				input#login_username(type="text" placeholder='UserName' autofocus)
+				i.user.icon
+			br
+			.ui.left.icon.input
+				input#login_password(type="text" placeholder="Password")
+				i.keyboard.icon
+			br
+			#login_submit.ui.icon.approve.button.green.basic 登录
+				i.icon.sign.in
 		block scripts
 			script(src='//code.jquery.com/jquery-2.1.4.min.js')
-			script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous")
-			//script(src='../scripts/jquery-2.1.4.min.js')
+			script(src='https://cdn.jsdelivr.net/lodash/3.10.1/lodash.min.js')
 			script(src='https://cdn.jsdelivr.net/jquery.ui/1.11.4/jquery-ui.min.js')
-			//script(src='../scripts/bootstrap.min.js')
-			script(src='../scripts/js.cookie.js')
-			script(src='../scripts/prefixfree.min.js')
-			script(src='../scripts/vibrant.min.js')
-			script(src='../scripts/core.js')
+			script(src='https://cdn.jsdelivr.net/semantic-ui/2.1.8/semantic.min.js')
+			script(src='https://cdn.jsdelivr.net/js-cookie/2.1.0/js.cookie.js')
+			script(src='https://cdn.jsdelivr.net/vue/1.0.15/vue.min.js')
+			script(src='//cdn.tinymce.com/4/tinymce.min.js')
+			//script(src='/scripts/lodash.min.js')
+			//script(src='/scripts/js.cookie.js')
+			script(src='/scripts/bootstrap.min.js')
+			script(src='/scripts/vibrant.min.js')
+			//script(src='/scripts/vue.min.js')
+			//script(src='/semantic/semantic.min.js')
+			//script(src='/tinymce/tinymce.min.js')
+			script(src='/scripts/canvas.js')
+			script(src='/scripts/mymce.js')
+			script(src='/scripts/core.js')
+			script(src='/scripts/upload.js')
 		include footer

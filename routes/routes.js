@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
 var Promise = require('bluebird');
-
+var md = require('markdown-it')();
 var fs = require('fs-extra'); //fs-extra to mkdir, rename and remove
 Promise.promisifyAll(fs);
 
@@ -17,7 +17,7 @@ var ObjectID = mongoDb.ObjectID;
 var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:37127/test';
 //var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
 //heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1
-var coll_name = 'mariana'; //mongodb collection name
+var coll_name = 'test0121'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
 var util = require('util');
@@ -36,50 +36,41 @@ var staffJade = jade.compileFile('./views/staff.jade');
 var aboutJade = jade.compileFile('./views/about.jade');
 var uploadJade = jade.compileFile('./views/upload.jade');
 
-var socketioPort = 30000;
-var io = require('socket.io')(socketioPort); //socket.io just to emit upload progress, kinda silly...
-
-io.on('connection', function(socket) {
-    winston.info('CONNECTED');
-    socket.join('sessionId');
-});
-
 var winston = require('winston'); //winston.js to log info and error
 winston.add(winston.transports.File, {
-    filename: '../lib/mariana-logs.log',
+    filename: 'public/logs.log',
     handleExceptions: true,
     humanReadableUnhandledException: true
 });
 var logErr = function(err) {
-    io.sockets.in('sessionId').emit('log', err);
+    //io.sockets.in('sessionId').emit('log', err);
     Promise.resolve(winston.error(err.toString())).catch(function(errs) {
         winston.error(err)
     });
 };
 
-var readLog = fs.readFileAsync('../lib/mariana-logs.log');
+
 /**
  * middleware function to log info
  */
 
 router.use(function(req, res, next) {
     winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
-    var readLog = fs.readFileAsync('../lib/mariana-logs.log');
-    var emitLog = function(logRaw) {
-        var logs = logRaw.toString().split('\n');
-        var newLog = JSON.parse(logs[logs.length - 2]);
-        io.sockets.in('sessionId').emit('log', newLog);
-    };
-    readLog.then(emitLog).catch(logErr);
+    /* var readLog = fs.readFileAsync('public/logs.log');
+        var emitLog = function(logRaw) {
+         var logs = logRaw.toString().split('\n');
+         var newLog = JSON.parse(logs[logs.length - 2]);
+         //io.sockets.in('sessionId').emit('log', newLog);
+     };
+     readLog.then(emitLog).catch(logErr);*/
     next();
 });
 /**
  * middleware function to check if it's a ajax req
  */
 router.use(function(req, res, next) {
-    if (!req.headers['x-requested-with']) {
+    if (req.method == 'GET' && req.headers && !req.headers['x-requested-with'] && req.headers['accept'] !== '*/*') {
         var reqUrl = req.originalUrl;
-        console.log(reqUrl);
         var html = layoutJade({
             initUrl: reqUrl === '/' ? null : reqUrl
         });
@@ -93,30 +84,44 @@ router.get('/', function(req, res) {
     var html = layoutJade();
     res.send(html);
 })
-router.get('/ajax', function(req, res) {
-    console.log(req.headers['x-requested-with']);
-    res.send(req.headers['x-requested-with']);
-})
-router.get('/env', function(req, res) {
-    res.send(process.env.MONGO_URL);
-})
-router.get('/log', function(req, res) {
-    res.render('log');
-})
-router.get('/logs', function(req, res) {
-    res.end('end');
-    var readLog = fs.readFileAsync('../lib/mariana-logs.log');
-    var emitLog = function(logRaw) {
-        var logs = logRaw.toString().split('\n');
-        for (var i = 0; i < logs.length; i++) {
-            var newLog = JSON.parse(logs[i]);
-            io.sockets.in('sessionId').emit('log', newLog);
+
+function saveFile(req, res, ftype) {
+    var uDir = './public/' + ftype;
+    var form = new formidable.IncomingForm({
+        uploadDir: uDir
+    });
+    form.on('progress', function(bytesReceived, bytesExpected) {
+        var pct = (100 * (bytesReceived / bytesExpected)).toString();
+        if (pct.substr(pct.lastIndexOf('.') + 1, 2) == '00') {
+            var progress = pct.substring(0, pct.lastIndexOf('.')) + "%";
+            console.log(progress);
         }
-    };
-    readLog.then(emitLog).catch(logErr);
+    });
+    form.on('file', function(name, file) {
+        var tempPath = file.path;
+        var newPath = uDir + '/' + Date.now() + file.name;
+        fs.rename(tempPath, newPath);
+        res.json({
+            location: newPath.substring(8)
+        });
+    });
+    form.on('error', function(err) {
+        console.log(err);
+    });
+
+    form.on('aborted', function() {
+        console.log('ABORTED!');
+    });
+    form.parse(req);
+}
+router.post('/images', function(req, res, next) {
+    saveFile(req, res, 'images');
+});
+router.post('/files', function(req, res, next) {
+    saveFile(req, res, 'files');
 });
 
-//connect to mongodb, and stay connected ever since.
+//connect to mongodb.
 MongoClient.connectAsync(url).then(function(db) {
         console.log('mongoDB connected!');
         var posts = db.collection(coll_name);
@@ -248,7 +253,7 @@ MongoClient.connectAsync(url).then(function(db) {
                     findPostsAsync(qFilter)
                         .then(function(doc) {
                             var html = detailsJade({
-                                data: doc
+                                doc: doc
                             });
                             res.send(html);
                         })
@@ -262,17 +267,13 @@ MongoClient.connectAsync(url).then(function(db) {
          * [simply get the data from mongodb and render the view of the about page]
          */
         router.get('/about', function(req, res) {
-            posts.findOneAsync({
-                type: 'about'
-            }).then(function(data) {
-                var html = aboutJade({
-                    data: data
-                });
+            fs.readFile('./public/about.md', 'utf8', (err, data) => {
+                if(err) console.log(err);
+                console.log(data);
+                html = md.render(data);
+                console.log(html);
                 res.send(html);
-            }).catch(function(err) {
-                res.send(err);
-                logErr(err);
-            });
+            })
         });
         /**
          * [function to delete a certain record
@@ -358,196 +359,13 @@ MongoClient.connectAsync(url).then(function(db) {
         });
 
         router.post('/add_new_post', function(req, res) {
-            var cdir = '../lib/' + req.cookies.uploadType + '/upload_' + DatetimeDashMin() + '/';
-            if (!fs.existsSync(cdir)) {
-                fs.mkdirsSync(cdir);
-            };
-            var form = new formidable.IncomingForm({
-                uploadDir: cdir
-            });
-            var nowner = '';
-            var ntitle = '';
-            var ntype = '';
-            var ndate = '';
-            var nsource = '';
-            var bkeys = [];
-            var nbody = [];
-            var fsizes = [];
-            var fweights = [];
-            var fstyles = [];
-            var pars = [];
-            var ikeys = [];
-            var img = [];
-            var imgs = [];
-            var imgpath = [];
-            var caps = [];
-            var atts = [];
-            var posi = [];
-            var swapath = [];
-            form.on('progress', function(bytesReceived, bytesExpected) {
-                var pct = (100 * (bytesReceived / bytesExpected)).toString();
-                if (pct.substr(pct.lastIndexOf('.') + 1, 1) == 0) {
-                    var progress = pct.substring(0, pct.lastIndexOf('.')) + "%";
-                    winston.info(progress);
-                    io.sockets.in('sessionId').emit('uploadProgress', progress);
-                }
-            });
-
-            form.on('field', function(name, value) {
-                switch (name) {
-                    case 'owner':
-                        {
-                            nowner = value.trim();
-                            break;
-                        }
-                    case 'title':
-                        {
-                            if (value !== '输入标题') {
-                                ntitle = value.trim();
-                            }
-                            break;
-                        }
-                    case 'type':
-                        {
-                            ntype = value.trim();
-                            break;
-                        }
-                    case 'date':
-                        {
-                            ndate = value.trim();
-                            break;
-                        }
-                    case 'source':
-                        {
-                            if (value !== '输入文章/资料来源') {
-                                nsource = value.trim();
-                            }
-                            break;
-                        }
-                    default:
-                        {
-                            var ftype = name.substr(name.lastIndexOf('-') + 1, 3);
-                            var key = name.substring(name.lastIndexOf('-') + 1);
-                            var fld = name.substring(0, name.lastIndexOf('-'));
-                            if (ftype === 'txa') {
-                                if (!bkeys.find(function(k) {
-                                        return k === key
-                                    })) {
-                                    bkeys.push(key);
-                                    nbody[key] = {};
-                                }
-                                nbody[key][fld] = value;
-                            } else if (ftype === 'img') {
-                                if (!ikeys.find(function(k) {
-                                        return k === key
-                                    })) {
-                                    ikeys.push(key);
-                                    img[key] = {};
-                                }
-                                if (value !== '在此输入图片说明') {
-                                    img[key][fld] = value;
-                                }
-                            }
-                        }
-                };
-            });
-            form.on('file', function(name, file) {
-                var tempPath = file.path;
-                var newPath = cdir.substring(3) + file.name;
-                swapath.push({
-                    tp: tempPath,
-                    np: '../' + newPath
-                });
-                if (name === 'att') {
-                    atts.push(newPath);
-                } else {
-                    var key = name.substring(name.lastIndexOf('-') + 1);
-                    var fld = name.substring(0, name.lastIndexOf('-'));
-                    if (!ikeys.find(function(k) {
-                            return k === key
-                        })) {
-                        ikeys.push(key);
-                        img[key] = {};
-                    }
-                    img[key][fld] = newPath;
-                }
-            });
-            form.on('error', function(err) {
-                io.sockets.in('sessionId').emit('uploadProgress', 'ERROR!');
-                winston.error('ERROR!');
-                fs.remove(cdir);
-            });
-
-            form.on('aborted', function() {
-                io.sockets.in('sessionId').emit('uploadProgress', 'ABORTED!');
-                winston.error('ABORTED!');
-            });
-
-            form.on('end', function() {
-                if (bkeys.length) {
-                    var pcount = [];
-                    _.each(bkeys, function(bkey, index) {
-                        var tp = nbody[bkey].txt.split("\n");
-                        pcount.push(tp.length);
-                        _.each(tp, function(val, index) {
-                            if (val) {
-                                pars.push({
-                                    txt: val,
-                                    fsize: nbody[bkey].fsize,
-                                    fweight: nbody[bkey].fweight,
-                                    fstyle: nbody[bkey].fstyle
-                                });
-                            }
-                        })
-                    })
-                    if (ikeys.length) {
-                        _.each(ikeys, function(ikey, index) {
-                            var c_pos = img[ikey].pos;
-                            img[ikey].pos = 0;
-                            for (var j = 0; j < c_pos; j++) {
-                                img[ikey].pos += pcount[j];
-                            };
-                            var imp = img[ikey].src;
-                            if (imp.substring(imp.lastIndexOf('/')).trim() !== '/') {
-                                imgs.push({
-                                    src: img[ikey].src,
-                                    cap: img[ikey].cap,
-                                    pos: img[ikey].pos
-                                })
-                            }
-                        })
-                    }
-                };
-                if (ndate === '') {
-                    ndate = GetCurrentDatetime()
-                };
-                var newPost = {
-                    owner: nowner,
-                    title: ntitle,
-                    type: ntype,
-                    date: ndate,
-                    source: nsource,
-                    body: pars,
-                    img: imgs,
-                    att: atts
-                };
-                var posts = db.collection(coll_name);
-                posts.insertOneAsync(newPost)
-                    .then(function() {
-                        io.sockets.in('sessionId').emit('uploadProgress', 'COMPLETE!');
-                        var html = layoutJade({
-                            initUrl: '/details?_id=' + r.insertedId
-                        });
-                        res.send(html);
-                    })
-                    .then(function() {
-                        swapath.forEach(function(sp) {
-                            fs.rename(sp.tp, sp.np);
-                        });
-                    })
-                    .catch(logErr);
-            });
-            form.parse(req);
+            posts.insertOneAsync(req.body)
+                .then(function(r) {
+                    res.send({
+                        url: '/details?_id=' + r.insertedId
+                    });
+                })
+                .catch(logErr);
         });
     })
     .catch(function(err) {

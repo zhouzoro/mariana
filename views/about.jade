@@ -1,7 +1,7 @@
 .container-fluid
 	.row
-		.col-xs-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-			h3=data.title
-			//h2.aboutitle=data.title
+		#about.col-xs-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+			.page-header
+				h2=data.title
 			each par, index in data.body
-				p(data-fsize=par.fsize ? par.fsize : '' data-fweight=par.fweight ? par.fweight : '' data-fstyle=par.fstyle ? par.fstyle : '')!=par.txt? par.txt.replace(/ /g,'&nbsp&nbsp') : par.replace(/ /g,'&nbsp&nbsp')
+				p!=par.txt? par.txt.replace(/ /g,'&nbsp&nbsp') : par.replace(/ /g,'&nbsp&nbsp')

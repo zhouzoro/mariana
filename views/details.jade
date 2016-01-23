@@ -1,35 +1,10 @@
-.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2.article#article_detail(data-id=data._id)
-	#modify(data-owner=data.owner)
+.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2.article#article_detail(data-id=doc._id)
+	#modify(data-owner=doc.owner)
 		//#edit.modify 编辑
 		#delete.modify 删除
-	h2#d_title= data.title
+	h2#d_title= doc.title
 	.row
-		p.col-md-12.col-lg-10.col-lg-offset-1
-			label#d_date= data.date
-			strong#d_source= "来源: " + data.source
-	if data.img.length
-		each img in data.img
-			- var imgsrc = '../../'+img.src
-			if img.pos == 0
-				.row
-					.d_fig.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-						img.d_img(src=imgsrc alt="a related image" class="post_img")
-						figcaption.d_figcap= img.cap
-	if data.body.length
-		each par, index in data.body
-			.row
-				p.col-md-12.col-lg-10.col-lg-offset-1.d_body(data-fsize=par.fsize ? par.fsize : '' data-fweight=par.fweight ? par.fweight : '' data-fstyle=par.fstyle ? par.fstyle : '')!=par.txt? par.txt.replace(/ /g,'&nbsp&nbsp').replace(/>/g,'&#062').replace(/</g,'&#060'): par.replace(/ /g,'&nbsp&nbsp')
-			each img in data.img
-				- var imgsrc = '../../'+img.src
-				if img.pos == index + 1
-					.row
-						.d_fig.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-							img.d_img(src=imgsrc alt="a related image" class="post_img")
-							figcaption.d_figcap= img.cap
-	if data.att.length
-		each att, index in data.att
-			- var att_name = att.substring(att.lastIndexOf("/")+1)
-			- var inte = index + 1
-			label 附件 #{inte}:
-			a.downloadlink(href='../../' + att download=att_name id="attr" + i)= att_name
-			br
+		p.meta.col-md-12.col-lg-10.col-lg-offset-1
+			label#d_date= doc.date
+			strong#d_source= "来源: " + doc.source
+	.main-body!= doc.body

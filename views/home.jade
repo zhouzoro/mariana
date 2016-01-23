@@ -1,32 +1,26 @@
+mixin slide(doc)
+	img.slr-img(src= doc.cover ?  doc.cover : '' alt='slider image' onclick='showDetail("'+doc._id+'")')
+	.carousel-caption
+		h3= doc.title
+		label.slabelextra
+			a.slabeldate= doc.date.substr(0, 10)
+			label.slabelsource= doc.source
 #slr-container.container-fluid
 	.no-side-boundry.row
 		.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-			//.jumbotron
 			#slr.carousel.slide(data-ride="carousel")
 				ol.carousel-indicators
 					each doc, index in news
 						li(data-target='#slr' data-slide-to=index)
 				#slr-inner.carousel-inner(role="listbox")
 					if news.length
-							each doc, index in news
-								if index==0
+							each dc, index in news
+								if index == 0
 									.slr-it.item.active
-										if doc.img.length
-											img.slr-img(src='../' + doc.img[0].src alt='slider image' onclick='showDetail("'+doc._id+'")')
-										.carousel-caption
-											h3= doc.title
-											label.slabelextra
-												a.slabeldate= doc.date.substr(0, 10)
-												label.slabelsource= doc.source
+										+slide(dc)
 								else
 									.slr-it.item
-										if doc.img.length
-											img.slr-img(src='../' + doc.img[0].src alt='slider image' onclick='showDetail("'+doc._id+'")')
-										.carousel-caption
-											h3= doc.title
-											label.slabelextra
-												a.slabeldate= doc.date.substr(0, 10)
-												label.slabelsource= doc.source
+										+slide(dc)
 				a.left.carousel-control(href='#slr' role="button" data-slide="prev")
 					span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
 					span.sr-only Previous
@@ -34,18 +28,20 @@
 					span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
 					span.sr-only Next
 #home-below.container-fluid
-	.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-		h4.a_nav(data-type='mtin') 会议安排
-		each doc, index in mtin
-				.row
+	.home-sample.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+		h3.ui.header.a_nav(data-type='mtin') 会议安排
+		.ui.list.divided
+			each doc, index in mtin
+				.item
 					.div_datelabel.col-sm-3.col-md-2
 						a.datelabel= doc.date.substr(0, 10)
 					.cursor-pointer.div_dlinklabel.col-sm-9.col-md-10
 						p.dlinklabel( onclick='showDetail("'+doc._id+'")')= doc.title
-	.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-		h4.a_nav(data-type='data') 资源下载
-		each doc, index in data
-				.row
+	.home-sample.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+		h3.ui.header.a_nav(data-type='data') 资源下载
+		.ui.list.divided
+			each doc, index in data
+				.item
 					.div_datelabel.col-sm-3.col-md-2
 						a.datelabel= doc.date.substr(0, 10)
 					.div_dlinklabel.col-sm-6.col-md-7

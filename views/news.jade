@@ -1,16 +1,19 @@
 .container-fluid
 	.row
 		.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-			.row
-				.col-xs-5.col-sm-4.col-md-3.col-lg-3
-					h3 新闻及最新进展
-				include pager
-			.container-fluid
+			.page-header
+				h2 新闻及最新进展
+			include pager
+			.ui.items.divided
 				each doc in data
-					.panel
-						.panel-heading
-							a.panel-title(onclick='showDetail("'+doc._id+'")')= doc.title
-						.no-side-boundry.panel-body
-							img.news-img.cursor-pointer.col-xs-12.col-md-6(onclick='showDetail("'+doc._id+'")' src=doc.img.length ? '../' + doc.img[0].src : '')
-							if doc.body.length
-								p.col-xs-0.col-sm-0.col-md-6!=doc.body[0].txt? doc.body[0].txt.replace(/ /g,'&nbsp') : doc.body[0].replace(/ /g,'&nbsp&nbsp')
+					.item
+						.ui.image.medium
+							img.cursor-pointer.col-xs-12.col-md-6(onclick='showDetail("'+doc._id+'")' src= doc.cover)
+						.content
+							.header(onclick='showDetail("'+doc._id+'")')= doc.title
+							.meta
+								span=doc.date
+								span=doc.source
+							.description
+								div!= doc.body ? doc.body.substring(doc.body.indexOf('>'), doc.body.indexOf('</p>')) : ''
+			include pager

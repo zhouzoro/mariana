@@ -23,10 +23,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
-app.use(favicon(__dirname + '/styles/ico/favicon.ico'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(__dirname + '/public/styles/ico/favicon.ico'));
 //serve static files:
-app.use('/scripts', express.static('scripts'));
-app.use('/styles', express.static('styles'));
 app.use('/lib', express.static('../lib'));
 app.use('/', routes);
 

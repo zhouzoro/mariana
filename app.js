@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(favicon(__dirname + '/public/styles/ico/favicon.ico'));
+app.use(favicon(__dirname + '/public/styles/ico/logo.min.png'));
 //serve static files:
 app.use('/lib', express.static('../lib'));
 app.use('/', routes);

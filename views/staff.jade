@@ -1,23 +1,19 @@
-.container-fluid
-    .row
-        .no-side-boundry.col-sm-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-            .staffs.row
-                .col-sm-12.col-sm-12.col-md-10.col-md-offset-1
-                    .page-header
-                        h2 人员目录
-                    table.ui.celled.table
-                        thead
-                            tr
-                                th.td_num #
-                                th.td_name 姓名
-                                th.td_posi 工作单位
-                        tbody
-                            tr
-                                td.td_num 总负责人
-                                td.td_name 林间
-                                td.td_posi 特聘研究员/中国科学院南海海洋研究所
-                            each doc, index in data
-                                tr
-                                    td.td_num= index + 1
-                                    td.td_name= doc.name
-                                    td.td_posi= doc.inst
+.staffs.row
+    .page-header
+        h2 人员目录
+    table.ui.celled.table
+        thead
+            tr
+                th.td_num #
+                th.td_name 姓名
+                th.td_posi 工作单位
+        tbody
+            tr
+                td.td_num 总负责人
+                td.td_name 林间
+                td.td_posi 特聘研究员/中国科学院南海海洋研究所
+            each doc, index in data
+                tr
+                    td.td_num= index + 1
+                    td.td_name= doc.name
+                    td.td_posi= doc.inst

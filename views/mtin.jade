@@ -1,15 +1,12 @@
-.container-fluid
-	.row
-		.article.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-			.page-header
-				h2 会议通知
-			include pager
-			.ui.list.divided
-				each doc in data
-					.item
-						h3
-							a(onclick='showDetail("'+doc._id+'")')= doc.title
-						.meta
-							a=doc.date
-						div!= doc.body.substring(0, doc.body.indexOf('</p>') + 4)
-			include pager
+.page-header
+	h2 会议通知
+include pager
+.ui.list.divided
+	each doc in data
+		.item
+			h3
+				a(onclick='showDetail("'+doc._id+'")')= doc.title
+			.meta
+				a=doc.date
+			div!= doc.body.substring(0, doc.body.indexOf('</p>') + 4)
+include pager

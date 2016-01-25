@@ -1,6 +1,6 @@
 {
   "name": "mariana",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Miariana Trench Project",
   "scripts": {
     "start": "node ./bin/mariana"

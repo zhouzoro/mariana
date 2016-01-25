@@ -3,26 +3,28 @@ var myUpload = function() {
     var vue;
 
     function uploadRD(darray) {
-        _.forEach(darray, function(data, index) {
-            _.forEach(data, function(val, key) {
-                if (val === '') {
-                    data[key + 'Placeholder'] += '不能为空！';
-
-                }
-            })
-        })
         $('#loader').modal('show');
         var loader = $('#loader').find('.loader');
         var updatep = function(n) {
             loader.text('uploading ' + n + 'of ' + darray.length);
         }
-        _.forEach(darray, function(data, index) {
+        _.forEach(darray, function(val, index) {
             index++;
             updatep(index);
-            data.date = GetCurrentDate();
+            data = {
+                date: GetCurrentDate(),
+                type: $('#upload-type').val(),
+                title: val.title,
+                name: val.name,
+                source: val.source,
+                path: val.path
+            }
+            console.log(data);
+
             $.post('/add_new_post', data, function(res) {
                 $('#loader').modal('hide');
-                loadContent(res.url);
+                console.log(res);
+                //loadContent(res.url);
             });
         })
         loadContent('/home');
@@ -34,34 +36,32 @@ var myUpload = function() {
     }
 
     function Att() {
-        var e = {};
-        e.title = '';
-        e.name = '';
-        e.source = '';
-        e.path = '';
-        e.progress = '0%';
-        e.updateProgress = function(oEvent) {
-            e.progress = computProgress(oEvent);
+        this.title = '';
+        this.name = '';
+        this.source = '';
+        this.path = '';
+        this.progress = '0%';
+        this.updateProgress = (oEvent) => {
+            this.progress = computProgress(oEvent);
         };
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
-        xhr.open('POST', '/files');
+        var fileUploadReq = new XMLHttpRequest();
+        fileUploadReq.withCredentials = false;
+        fileUploadReq.open('POST', '/files');
 
-        xhr.onload = function() {
-            var json = JSON.parse(xhr.responseText);
-            e.path = json.location;
+        fileUploadReq.onload = () => {
+            var json = JSON.parse(fileUploadReq.responseText);
+            this.path = json.location;
         };
-        xhr.upload.addEventListener("progress", e.updateProgress, false);
-        e.uploadFile = function(ele) {
-            e.name = ele.files[0].name;
+        fileUploadReq.upload.addEventListener("progress", this.updateProgress, false);
+        this.uploadFile = (ele) => {
+            this.name = ele.files[0].name;
             var form = $(ele).parent('.frmfile')[0];
             var formData = new FormData(form);
-            xhr.send(formData);
+            fileUploadReq.send(formData);
         };
-        e.abort = function() {
-            xhr.abort();
+        this.abort = function() {
+            fileUploadReq.abort();
         }
-        return e;
     }
 
     function initManeger() {
@@ -74,7 +74,7 @@ var myUpload = function() {
             e.states.push(0);
             attCount++;
             var attname = 'att' + attCount;
-            var newAtt = Att();
+            var newAtt = new Att();
             e.atts[attname] = newAtt;
             var newForm = $('<form>').attr({
                 'class': 'frmfile',
@@ -128,6 +128,7 @@ var myUpload = function() {
             $('#btn-add').click(function() {
                 vue.refes.push(refeManager.addAtt());
             });
+            $('#btn-upload').off('click');
             $('#btn-upload').click(function() {
                 uploadRD(vue.refes)
             })
@@ -153,11 +154,16 @@ var myUpload = function() {
             $('#btn-add').click(function() {
                 vue.datas.push(dataManager.addAtt());
             });
+            $('#btn-upload').off('click');
             $('#btn-upload').click(function() {
                 uploadRD(vue.datas)
             })
         } else {
-
+            $('.news-only').show();
+            $('.refe-only').show();
+            $('.data-only').hide();
+            $('.refe-only').hide();
+            $('#btn-add').hide();
             $('#upload-type').change(function() {
                 mce.init($(this).val())
             })
@@ -190,6 +196,7 @@ var myUpload = function() {
                     }
                 }
             })
+            $('#input-img').off('change');
             $('#input-img').change(function() {
                 if (this.files && this.files[0]) {
                     var reader = new FileReader();
@@ -202,13 +209,16 @@ var myUpload = function() {
                 }
             });
             $('#input-date').val(GetCurrentDate());
+            $('#btn-att').off('click');
             $('#btn-att').click(function() {
-                vuef.atts.push(attManager.addAtt());
+                vue.atts.push(attManager.addAtt());
             });
 
+            $('#btn-upload').off('click');
             $('#btn-img').click(function() {
                 $('#input-img').click();
             });
+            $('#btn-upload').off('click');
             $('#btn-upload').click(function() {
                 $('#loader').modal('show');
                 var loader = $('#loader').find('.loader');

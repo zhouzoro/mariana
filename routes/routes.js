@@ -14,10 +14,10 @@ var ObjectID = mongoDb.ObjectID;
 //mongorestore -d test -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 //
 //var url = process.env.MONGOLAB_URL || 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2';
-var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:37127/test';
+var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:37127/mariana';
 //var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
 //heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1
-var coll_name = 'test0121'; //mongodb collection name
+var coll_name = 'mariana'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
 var util = require('util');
@@ -69,13 +69,16 @@ router.use(function(req, res, next) {
  * middleware function to check if it's a ajax req
  */
 router.use(function(req, res, next) {
-    if (req.method == 'GET' && req.headers && !req.headers['x-requested-with'] && req.headers['accept'] !== '*/*') {
+    if (req.method == 'GET' && req.originalUrl !== '/') {
         var reqUrl = req.originalUrl;
         var html = layoutJade({
             initUrl: reqUrl === '/' ? null : reqUrl
         });
         res.send(html);
     } else {
+        if (req.body.xreq) {
+            req.method = 'GET';
+        }
         next();
     }
 });
@@ -268,7 +271,7 @@ MongoClient.connectAsync(url).then(function(db) {
          */
         router.get('/about', function(req, res) {
             fs.readFile('./public/about.md', 'utf8', (err, data) => {
-                if(err) console.log(err);
+                if (err) console.log(err);
                 console.log(data);
                 html = md.render(data);
                 console.log(html);
@@ -335,7 +338,8 @@ MongoClient.connectAsync(url).then(function(db) {
         });
 
         router.post('/authentication', function(req, res) {
-            var users = db.collection('mariana_users');
+            var users = db.collection('users');
+            console.log(req.body);
             users.countAsync({
                 username: req.body.username,
                 password: req.body.password
@@ -359,6 +363,7 @@ MongoClient.connectAsync(url).then(function(db) {
         });
 
         router.post('/add_new_post', function(req, res) {
+            console.log(req.body);
             posts.insertOneAsync(req.body)
                 .then(function(r) {
                     res.send({

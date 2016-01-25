@@ -1,19 +1,16 @@
-.container-fluid
-	.row
-		.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-			.page-header
-				h2 新闻及最新进展
-			include pager
-			.ui.items.divided
-				each doc in data
-					.item
-						.ui.image.medium
-							img.cursor-pointer.col-xs-12.col-md-6(onclick='showDetail("'+doc._id+'")' src= doc.cover)
-						.content
-							.header(onclick='showDetail("'+doc._id+'")')= doc.title
-							.meta
-								span=doc.date
-								span=doc.source
-							.description
-								div!= doc.body ? doc.body.substring(doc.body.indexOf('>'), doc.body.indexOf('</p>')) : ''
-			include pager
+.page-header
+	h2 新闻及最新进展
+include pager
+.ui.items.divided
+	each doc in data
+		.item
+			.ui.image.medium
+				img.cursor-pointer.col-xs-12.col-md-6(onclick='showDetail("'+doc._id+'")' src= doc.cover)
+			.content
+				.header.cursor-pointer(onclick='showDetail("'+doc._id+'")')= doc.title
+				.meta
+					span=doc.date
+					span=doc.source
+				.description
+					div!= doc.body ? doc.body.substring(doc.body.indexOf('>')+1, doc.body.indexOf('</p>')) : ''
+include pager

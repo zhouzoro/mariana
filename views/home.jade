@@ -7,7 +7,6 @@ mixin slide(doc)
 			label.slabelsource= doc.source
 #slr-container.container-fluid
 	.no-side-boundry.row
-		.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
 			#slr.carousel.slide(data-ride="carousel")
 				ol.carousel-indicators
 					each doc, index in news
@@ -28,7 +27,7 @@ mixin slide(doc)
 					span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
 					span.sr-only Next
 #home-below.container-fluid
-	.home-sample.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+	.home-sample.border-bottom
 		h3.ui.header.a_nav(data-type='mtin') 会议安排
 		.ui.list.divided
 			each doc, index in mtin
@@ -37,17 +36,14 @@ mixin slide(doc)
 						a.datelabel= doc.date.substr(0, 10)
 					.cursor-pointer.div_dlinklabel.col-sm-9.col-md-10
 						p.dlinklabel( onclick='showDetail("'+doc._id+'")')= doc.title
-	.home-sample.border-bottom.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
+	.home-sample.border-bottom
 		h3.ui.header.a_nav(data-type='data') 资源下载
 		.ui.list.divided
 			each doc, index in data
 				.item
-					.div_datelabel.col-sm-3.col-md-2
+					.div_datelabel.col-sm-3.col-md-2.col-lg-2
 						a.datelabel= doc.date.substr(0, 10)
-					.div_dlinklabel.col-sm-6.col-md-7
+					.div_dlinklabel.col-sm-6.col-md-6.col-md-6
 						p.dlinklabel= doc.title
-					.div_downloadLink.col-sm-3.col-md-3
-						if doc.att.length
-							- var downloadPath = doc.att[0]
-							- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
-							a.downloadlink(id=index href='../../' + downloadPath download=fileName)= fileName
+					.div_downloadLink.col-sm-3.col-md-4.col-md-4
+						a.downloadlink(id= index href= doc.path download= doc.name)= doc.name

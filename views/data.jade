@@ -1,17 +1,11 @@
-.container-fluid
-	.row
-		.article.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-			.page-header
-				h2 数据资料下载
-			include pager
-			.row
-				.ui.list.divided
-					each doc, index in data
-						.item
-							a.datelabel.col-md-2= doc.date.substr(0, 10)
-							label.col-md-5= doc.title
-							if doc.att.length
-								- var downloadPath = doc.att[0]
-								- var fileName = downloadPath.substring(downloadPath.lastIndexOf('/') + 1)
-								a.downloadlink.col-md-5(id= index href= '../../' + downloadPath download= fileName)= fileName
-			include pager
+.page-header
+	h2 数据资料下载
+include pager
+.row
+	.ui.list.divided
+		each doc, index in data
+			.item
+				a.datelabel.col-xs-3.col-md-2= doc.date.substr(0, 10)
+				label.col-xs-9.col-md-5= doc.title
+				a.downloadlink.col-xs-9.col-xs-offset-3.col-md-5(id= index href= doc.path download= doc.name)= doc.name
+include pager.col-xs-5

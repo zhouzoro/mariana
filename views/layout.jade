@@ -10,28 +10,27 @@ html
 		link(rel='stylesheet' href='/styles/app.min.css')
 		//link(rel='stylesheet' href='/styles/upload.css')
 	body
-		#loader
-			.ui.active.dimmer
-				.ui.text.loader Loading
 		header#header
 			canvas#cv-app-1
 			nav.navbar.navbar-inverse.row.no-side-boundry
-				#logo-placeholder
-				#blur-bg
+				//#logo-placeholder
 				//.col-xs-12.col-sm-12.col-md-3.col-lg-2
 					.navbar-brand.a_nav.col-xs-12.col-sm-12.col-md-3.col-lg-2(data-type='home')
 						img#logo-img(src='/styles/ico/Drawing.png')
-				#nav-content
-					//.no-side-boundry.col-xs-12.col-sm-12.col-md-9.col-lg-8
+				.row
+					img#logo-img.a_nav(data-type='home' src='/styles/ico/Drawing.png')
+				#nav-content.row
+					//img#blur-bg(src='/images/mariana1.jpg')
 					.navbar-header
+						//.col-xs-12.col-sm-12.col-md-3.col-lg-3
 						.navbar-toggle.collapsed.navbar-left(type='button' data-toggle="collapse" data-target="#navco" aria-expanded="false")
 							span.sr-only Toggle navigation
 							span.icon-bar
 							span.icon-bar
 							span.icon-bar
-					.navbar-brand.a_nav.col-xs-12.col-sm-12.col-md-3.col-lg-2(data-type='home')
-						img#logo-img(src='/styles/ico/Drawing.png')
+						.navbar-brand.a_nav(data-type='home') 马里亚纳海沟计划
 					#navco.collapse.navbar-collapse
+						//.no-side-boundry.col-xs-12.col-sm-12.col-md-9.col-lg-9
 						ul.nav.navbar-nav
 							li: a.navbar-link.a_nav(data-type='news') 新闻进展
 							li: a.navbar-link.a_nav(data-type='mtin') 会议安排
@@ -40,20 +39,24 @@ html
 							li: a.navbar-link.a_nav(data-type='staff') 人员名单
 							li: a.navbar-link.a_nav(data-type='about') 关于
 						ul.nav.navbar-nav.navbar-right
-							li: #login_entry.nav-btn.ui.icon.left.button.basic.green.small 登录
+							li: #login_entry.nav-btn.ui.icon.left.button.basic.green.small(hidden) 登录
 									i.ui.icon.sign.in
-							li: #upload_entry.nav-btn.ui.icon.left.button.basic.blue.small 上传
+							li: #upload_entry.nav-btn.ui.icon.left.button.basic.blue.small(hidden) 上传
 									i.ui.icon.upload
-							li: #log_out.nav-btn.ui.icon.left.button.basic.red.small 退出
+							li: #log_out.nav-btn.ui.icon.left.button.basic.red.small(hidden) 退出
 									i.ui.icon.sign.out
-		#main_body.row(data-init-url=initUrl ? initUrl : '/home')
+					#body-loader.init-progress(hidden)
+		#scroll-top.ui(hidden)
+			i.ui.icon.angle.up.white
+		.row#body-container
+			#main_body.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2(data-init-url=initUrl ? initUrl : '/home')
 		#ldlog.ui.modal.basic
 			.ui.left.icon.input
 				input#login_username(type="text" placeholder='UserName' autofocus)
 				i.user.icon
 			br
 			.ui.left.icon.input
-				input#login_password(type="text" placeholder="Password")
+				input#login_password(type="password" placeholder="Password")
 				i.keyboard.icon
 			br
 			#login_submit.ui.icon.approve.button.green.basic 登录
@@ -65,14 +68,14 @@ html
 			script(src='https://cdn.jsdelivr.net/semantic-ui/2.1.8/semantic.min.js')
 			script(src='https://cdn.jsdelivr.net/js-cookie/2.1.0/js.cookie.js')
 			script(src='https://cdn.jsdelivr.net/vue/1.0.15/vue.min.js')
-			script(src='//cdn.tinymce.com/4/tinymce.min.js')
+			//script(src='https://cdn.jsdelivr.net/tinymce/4.1.2/tinymce.min.js')
 			//script(src='/scripts/lodash.min.js')
 			//script(src='/scripts/js.cookie.js')
 			script(src='/scripts/bootstrap.min.js')
 			script(src='/scripts/vibrant.min.js')
 			//script(src='/scripts/vue.min.js')
 			//script(src='/semantic/semantic.min.js')
-			//script(src='/tinymce/tinymce.min.js')
+			script(src='/tinymce/tinymce.min.js')
 			script(src='/scripts/canvas.js')
 			script(src='/scripts/mymce.js')
 			script(src='/scripts/core.js')

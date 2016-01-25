@@ -46,12 +46,12 @@ function initCanvas(selector) {
         context.fillRect(-.5 * width, -.5 * height, width, height);
     }
 
-    context.globalAlpha = 0.4;
+    context.globalAlpha = 0.2;
 
-    function chessBoard(i, j) {
+    function chessBoard(i, j, cw) {
         var color = (i + j) % 2 == 0 ? 'white' : 'black'
         context.fillStyle = color;
-        context.fillRect(i * 64, j * 64, 64, 64);
+        context.fillRect(i * cw, j * cw, cw, cw);
     }
 
     function drawdot(pnt) {
@@ -193,16 +193,29 @@ function initCanvas(selector) {
         }
         drawScreen(start, end);
     }
-    */
+    
     for (var i = 0; i < colCount; i++) {
 
         for (var j = 0; j < rowCount; j++) {
             var pnt = {
+                x: i * 80 + 80,
+                y: j * 80 + 80
+            }
+            //drawrec(pnt);
+            chessBoard(i, j,80);
+        }
+    }
+    var bcell=80
+    var cn=Math.floor(w/bcell);
+    var rn=Math.floor(h/bcell);
+    for (var i = 0; i < cn; i++) {
+
+        for (var j = 0; j < rn; j++) {
+            var pnt = {
                 x: i * 64 + 64,
                 y: j * 64 + 64
             }
-            drawrec(pnt);
-            //chessBoard(i, j);
+            chessBoard(i, j,bcell);
         }
-    }
+    }*/
 }

@@ -1,60 +1,63 @@
 link(rel='stylesheet' href='/styles/upload.min.css')
-.no-side-boundry.row
-	.no-side-boundry.col-xs-12.col-sm-12.col-md-10.col-md-offset-1.col-lg-8.col-lg-offset-2
-		label#type 类型:
-			select#upload-type.ui.dropdown.transparent(name="type")
-				option(value="news") 新闻和进展
-				option(value="mtin") 会议通知
-				option(value="data") 数据和资料
-				option(value="refe") 参考文献
-		form#frm_news.news-only(method="post" action="/tinymce" enctype="multipart/form-data")
-			#ul_title
-				.title.ui.transparent.input
-					input#input-title.title(name="title" rows="1" autofocus required placeholder="输入标题")
-			#date_src
-				.ui.transparent.input 日期
-					input#input-date(type="Date" name="date" value='2016-01-01' required)
-				.ui.transparent.input
-					input#input-source(type="text" name="source" placeholder="输入文章/资料来源" required)
-			#frm-body
-				textarea#input-body(name='body' rows='20' required)
-			#att
-				input#input-att(type='text' name='att' hidden)
-		#app.upload-att.divided.news-only
-			.att(v-for='(index, att) in atts')
-				button.ui.icon.button.red.small.basic(v-on:click='remove(att)')
-					i.icon.trash
-				label 附件.{{ index + 1 }}:
-				.ui.transparent.input
-					input.att-name(type="text" placeholder="{{ att.name }}" value="{{ att.name }}")
-				.ui.bottom.attched.progress.tiny
-					.bar(v-bind:style='{ width: att.progress, background: att.progress == "100%" ? "#008800" : "#000088"}')
-		#app-d.upload-data.data-only(hidden)
-			.data.divided(v-for='(index, data) in datas')
-				button.ui.icon.button.red.small.basic(v-on:click='remove(data)')
-					i.icon.trash
-				.ui.transparent.input
-					input.att-name(type="text" placeholder="标题" value="{{ data.title }}")
-				.ui.transparent.input
-					input(type="text" placeholder="来源" value="{{ data.source }}")
-				.ui.bottom.attched.progress.tiny.blue
-					.bar(v-bind:style='{ width: data.progress, background: data.progress == "100%" ? "#008800" : "#000088" }')
-		#app-r.upload-data.refe-only(hidden)
-			.refe.divided(v-for='(index, refe) in refes')
-				button.ui.icon.button.red.small.basic(v-on:click='remove(refe)')
-					i.icon.trash
-				.ui.transparent.input
-					input.att-name(type="text" placeholder="文献条目" value="{{ refe.title }}")
-				.ui.bottom.attched.progress.tiny.blue
-					.bar(v-bind:style='{ width: refe.progress, background: refe.progress == "100%" ? "#008800" : "#000088"}')
-		#ops
-			button#btn-upload.ui.labeled.icon.button.basic.teal.small 提交
-				i.icon.send.outline
-			button#btn-img.news-only.ui.labeled.icon.button.basic.orange.small 图片
-				i.icon.file.image.outline
-			button#btn-att.news-only.ui.labeled.icon.button.basic.blue.small 附件
-				i.icon.attach
-			button#btn-add.ui.labeled.icon.button.basic.blue.small(hidden) 添加条目
-				i.icon.add.circle
-		#tips tips:
-			p 可直接拖放插入图片
+#loader.ui.modal.basic
+	.content
+		.ui.text.loader Loading
+		label.loader
+label#type 类型:
+	select#upload-type.ui.dropdown.transparent(name="type")
+		option(value="news") 新闻和进展
+		option(value="mtin") 会议通知
+		option(value="data") 数据和资料
+		option(value="refe") 参考文献
+form#frm_news.news-only(method="post" action="/tinymce" enctype="multipart/form-data")
+	#ul_title
+		.title.ui.transparent.input
+			input#input-title.title(name="title" rows="1" autofocus required placeholder="输入标题")
+	#date_src
+		.ui.transparent.input 日期
+			input#input-date(type="Date" name="date" value='2016-01-01' required)
+		.ui.transparent.input
+			input#input-source(type="text" name="source" placeholder="输入文章/资料来源" required)
+	#frm-body
+		textarea#input-body(name='body' rows='20' required)
+	#att
+		input#input-att(type='text' name='att' hidden)
+#app.upload-att.divided.news-only
+	.att(v-for='(index, att) in atts')
+		button.ui.icon.button.red.small.basic(v-on:click='remove(att)')
+			i.icon.trash
+		label 附件.{{ index + 1 }}:
+		.ui.transparent.input
+			input.att-name(type="text" placeholder="{{ att.name }}" v-model='att.name')
+		.ui.bottom.attched.progress.tiny
+			.bar(v-bind:style='{ width: att.progress, background: att.progress == "100%" ? "#008800" : "#000088"}')
+#app-d.upload-data.data-only(hidden)
+	.data.divided(v-for='(index, data) in datas')
+		button.ui.icon.button.red.small.basic(v-on:click='remove(data)')
+			i.icon.trash
+		.ui.transparent.input
+			input.att-name(type="text" placeholder="标题" v-model='data.title')
+		.ui.transparent.input
+			input(type="text" placeholder="来源" v-model='data.source')
+		.ui.bottom.attched.progress.tiny.blue
+			.bar(v-bind:style='{ width: data.progress, background: data.progress == "100%" ? "#008800" : "#000088" }')
+#app-r.upload-data.refe-only(hidden)
+	.refe.divided(v-for='(index, refe) in refes')
+		button.ui.icon.button.red.small.basic(v-on:click='remove(refe)')
+			i.icon.trash
+		.ui.transparent.input
+			input.att-name(type="text" placeholder="文献条目" v-model='refe.title')
+		.ui.bottom.attched.progress.tiny.blue
+			.bar(v-bind:style='{ width: refe.progress, background: refe.progress == "100%" ? "#008800" : "#000088"}')
+input#input-img(type='file' hidden)
+#ops
+	button#btn-upload.ui.labeled.icon.button.basic.teal.small 提交
+		i.icon.send.outline
+	button#btn-img.news-only.ui.labeled.icon.button.basic.orange.small 图片
+		i.icon.file.image.outline
+	button#btn-att.news-only.ui.labeled.icon.button.basic.blue.small 附件
+		i.icon.attach
+	button#btn-add.ui.labeled.icon.button.basic.blue.small(hidden) 添加条目
+		i.icon.add.circle
+#tips tips:
+	p 可直接拖放插入图片

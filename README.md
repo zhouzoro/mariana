@@ -1,3 +1,1 @@
-# mariana
-website project for Mariana Trench Project in SCSIO.CAS
-To be continued
+Website project for Mariana Trench Project in SCSIO

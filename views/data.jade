@@ -1,11 +1,10 @@
 .page-header
 	h2 数据资料下载
 include pager
-.row
-	.ui.list.divided
-		each doc, index in data
-			.item
-				a.datelabel.col-xs-3.col-md-2= doc.date.substr(0, 10)
-				label.col-xs-9.col-md-5= doc.title
-				a.downloadlink.col-xs-9.col-xs-offset-3.col-md-5(id= index href= doc.path download= doc.name)= doc.name
-include pager.col-xs-5
+.ui.list.divided
+	each doc, index in data
+		.item.row
+			a.datelabel.col-xs-12.col-md-2= doc.date.substr(0, 10)
+			label.col-xs-12.col-md-5= doc.title
+			a.downloadlink.col-xs-12.col-md-5(id= index href= doc.path download= doc.name)= doc.name
+include pager

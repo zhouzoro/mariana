@@ -33,9 +33,9 @@ gulp.task('styles', function() {
 });
 
 gulp.task('scripts', function() {
-    return gulp.src('public/scripts/*.js')
-        .pipe(jshint('.jshintrc'))
-        .pipe(jshint.reporter('default'))
+    return gulp.src('public/scripts/raw/*.js')
+        //.pipe(jshint('.jshintrc'))
+        //.pipe(jshint.reporter('default'))
         .pipe(concat('main.js'))
         .pipe(gulp.dest('public/scripts'))
         .pipe(rename({
@@ -68,13 +68,13 @@ gulp.task('clean', function() {
 gulp.task('watch', function() {
 
   // Watch .sass files
-  gulp.watch('public/styles/**/*.sass', ['styles']);
+  gulp.watch('public/styles/*.sass', ['styles']);
 
   // Watch .js files
-  //gulp.watch('public/scripts/**/*.js', ['scripts']);
+  gulp.watch('public/scripts/raw/*.js', ['scripts']);
 
   // Watch image files
-  gulp.watch('public/images/**/*', ['images']);
+  gulp.watch('public/images/*', ['images']);
 
 });
 

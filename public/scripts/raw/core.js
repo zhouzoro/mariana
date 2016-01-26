@@ -9,8 +9,6 @@ $(document).ready(function() {
     $(document).scroll(controlNavPosition);
     $('#scroll-top').click(ScrollTop);
 })
-
-
 var downloads = function() {
     var dLinks = [];
     return {
@@ -37,7 +35,6 @@ var downloads = function() {
         }
     }
 }();
-
 function loadContent(url) {
     $('#body-loader').show();
     ScrollTop();

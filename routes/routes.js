@@ -3,7 +3,7 @@ var router = express.Router();
 var _ = require('lodash');
 var Promise = require('bluebird');
 var md = require('markdown-it')();
-var fs = require('fs-extra'); //fs-extra to mkdir, rename and remove
+var fs = require('fs-extra');
 Promise.promisifyAll(fs);
 
 var mongoDb = require('mongodb');
@@ -15,17 +15,15 @@ var ObjectID = mongoDb.ObjectID;
 //
 //var url = process.env.MONGOLAB_URL || 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2';
 var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:37127/mariana';
-//var url = ['mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1', 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2', 'mongodb://mariana:MarianaDB3@ds056698.mongolab.com:56698/zyoldb3'];
-//heroku config:set MONGOLAB_URL=mongodb://mariana:MarianaDB1@ds035485.mongolab.com:35485/zyoldb1
 var coll_name = 'mariana'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
 var util = require('util');
 
 var jade = require('jade');
-var layoutJade = jade.compileFile('./views/layout.jade');
+var layoutJade = jade.compileFile('./views/layout.jade'); //pre-compile jade into functions will be used a lot
 var homeJade = jade.compileFile('./views/home.jade');
-var detailsJade = jade.compileFile('./views/details.jade'); //pre-compile details.jade will be used a lot
+var detailsJade = jade.compileFile('./views/details.jade');
 var recsJade = {
     news: jade.compileFile('./views/news.jade'),
     mtin: jade.compileFile('./views/mtin.jade'),
@@ -43,7 +41,6 @@ winston.add(winston.transports.File, {
     humanReadableUnhandledException: true
 });
 var logErr = function(err) {
-    //io.sockets.in('sessionId').emit('log', err);
     Promise.resolve(winston.error(err.toString())).catch(function(errs) {
         winston.error(err)
     });
@@ -56,29 +53,19 @@ var logErr = function(err) {
 
 router.use(function(req, res, next) {
     winston.info(GetCurrentDatetime(), ': request from: ', req.ip, ', req.url: ', req.originalUrl);
-    /* var readLog = fs.readFileAsync('public/logs.log');
-        var emitLog = function(logRaw) {
-         var logs = logRaw.toString().split('\n');
-         var newLog = JSON.parse(logs[logs.length - 2]);
-         //io.sockets.in('sessionId').emit('log', newLog);
-     };
-     readLog.then(emitLog).catch(logErr);*/
     next();
 });
 /**
  * middleware function to check if it's a ajax req
  */
 router.use(function(req, res, next) {
-    if (req.method == 'GET' && req.originalUrl !== '/') {
+    if (!req.headers['x-requested-with']) {
         var reqUrl = req.originalUrl;
         var html = layoutJade({
             initUrl: reqUrl === '/' ? null : reqUrl
         });
         res.send(html);
     } else {
-        if (req.body.xreq) {
-            req.method = 'GET';
-        }
         next();
     }
 });
@@ -195,16 +182,17 @@ MongoClient.connectAsync(url).then(function(db) {
 
         /**
          * [function to get certain type of record from mongodb]
-         * @param {[object]} req [includes query containing record type(req.query.rtype), whitch page(req.query.cnum) and how many(req.query.numpp) records to be extracted.]
+         * @param {[object]} req [includes query containing record type(req.query.t), whitch page(req.query.cnum) and how many(req.query.numpp) records to be extracted.]
          * @param {[object]} res [render certain type of view to the client]
          */
         router.get('/records?', function(req, res) {
             var pnum = req.query;
             var recFilter = defaultFilter();
-            recFilter.selector.type = pnum.rtype; //record type
-            recFilter.skip = parseInt(pnum.cnum) * parseInt(pnum.numpp); //whitch page of record
+            recFilter.selector.type = pnum.t; //record type
+            pnum.numpp = pnum.numpp ? pnum.numpp : 12;
+            recFilter.skip = parseInt(pnum.p) * parseInt(pnum.numpp); //whitch page of record
             recFilter.limit = parseInt(pnum.numpp);
-            if (pnum.rtype === 'refe') {
+            if (pnum.t === 'refe') {
                 recFilter.sorter = {
                     iteratee: 'serl',
                     order: 'asc'
@@ -214,11 +202,11 @@ MongoClient.connectAsync(url).then(function(db) {
             //do the query:
             findPostsAsync(recFilter).then(function(docs) {
                 posts.countAsync({
-                    type: pnum.rtype
+                    type: pnum.t
                 }).then(function(count) {
                     var tnum = Math.ceil(count / pnum.numpp); //count how many pages
                     pnum['tnum'] = tnum;
-                    var html = recsJade[pnum.rtype]({
+                    var html = recsJade[pnum.t]({
                         data: docs,
                         pnum: pnum
                     });
@@ -238,8 +226,10 @@ MongoClient.connectAsync(url).then(function(db) {
         router.get('/details?', function(req, res) {
             var getId = function() {
                 try {
+                    console.log(require('mongodb').ObjectID(req.query._id));
                     return require('mongodb').ObjectID(req.query._id)
                 } catch (err) {
+                    console.log(err);
                     return require('mongodb').ObjectID(req.query._id.substr(1, 24))
                 }
             }
@@ -339,7 +329,6 @@ MongoClient.connectAsync(url).then(function(db) {
 
         router.post('/authentication', function(req, res) {
             var users = db.collection('users');
-            console.log(req.body);
             users.countAsync({
                 username: req.body.username,
                 password: req.body.password

@@ -36,8 +36,5 @@
     "gulp-ruby-sass": "^2.0.6",
     "gulp-uglify": "^1.5.1",
     "jshint": "^2.8.0"
-  },
-  "engines": {
-    "node": "5.3.0"
   }
 }

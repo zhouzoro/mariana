@@ -23,10 +23,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(__dirname + '/public/styles/ico/logo.min.png'));
 //serve static files:
-app.use('/lib', express.static('../lib'));
+app.use(function(req, res, next) {
+    console.log(req.ip);
+    next();
+});
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 // catch 404 and forward to error handler

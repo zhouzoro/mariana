@@ -1,11 +1,11 @@
 p#pager
-	-var cp = parseInt(pnum.cnum) + 1
-	-var previous = parseInt(pnum.cnum) - 1
-	a.item.load_previous(data-type= pnum.rtype data-num= previous data-numpp= pnum.numpp)
+	-var cp = parseInt(pnum.p) + 1
+	-var previous = parseInt(pnum.p) - 1
+	a.item.load_previous(data-type= pnum.t data-num= previous data-numpp= pnum.numpp)
 		i.icon.long.arrow.left
 		span 上一页
 	span.item.disabled.pagenum(data-pagenum= cp)= cp
 	span.item.disabled /
 	span.item.disabled.tpagenum(data-pagenum= pnum.tnum)= pnum.tnum
-	a.item.load_next(data-type= pnum.rtype data-num= cp data-numpp= pnum.numpp) 下一页
+	a.item.load_next(data-type= pnum.t data-num= cp data-numpp= pnum.numpp) 下一页
 		i.icon.long.arrow.right

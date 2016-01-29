@@ -29,6 +29,16 @@ var myUpload = function() {
         })
         loadContent('/home');
     }
+function getQuoteText(htmlStr) {
+        var p;
+        $(htmlStr).find('*').each(function() {
+            if ($(this).text().length > 32) {
+                p = $(this).text();
+                return false;
+            }
+        })
+        return p
+    }
 
     function computProgress(oEvent) {
         var percentComplete = Math.ceil(1000 * oEvent.loaded / oEvent.total) / 10 + '%';
@@ -234,6 +244,7 @@ var myUpload = function() {
                         owner: Cookies.get('username'),
                         source: $('#input-source').val(),
                         cover: $($('#input-body').val()).find('img').attr('src'),
+                        quote: getQuoteText($('#input-body').val()),
                         body: $('#input-body').val() + attHtml,
                         att: attHtml
                     };

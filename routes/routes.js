@@ -12,31 +12,34 @@ var MongoClient = mongoDb.MongoClient;
 var ObjectID = mongoDb.ObjectID;
 //mongorestore -h ds061464.mongolab.com:61464 -d zyoldb2 -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
 //mongorestore -d test -u zhouzoro -p mydb1acc C:\zhouy\_wrkin\mongoDB-11-24\test
-//
-//var url = process.env.MONGOLAB_URL || 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2';
-var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:37127/mariana';
+var dbport = process.env.MONGO_PORT || 65123
+    //var url = process.env.MONGOLAB_URL || 'mongodb://mariana:MarianaDB2@ds061464.mongolab.com:61464/zyoldb2';
+var url = process.env.MONGO_URl || 'mongodb://127.0.0.1:' + dbport + '/mariana';
 var coll_name = 'mariana'; //mongodb collection name
 
 var formidable = require('formidable'); //formidable to handle form upload
 var util = require('util');
 
 var jade = require('jade');
-var layoutJade = jade.compileFile('./views/layout.jade'); //pre-compile jade into functions will be used a lot
-var homeJade = jade.compileFile('./views/home.jade');
-var detailsJade = jade.compileFile('./views/details.jade');
+var viewPathOf = function(vname) {
+    return __dirname + '/../views/' + vname + '.jade'
+}
+var layoutJade = jade.compileFile(viewPathOf('layout')); //pre-compile jade into functions will be used a lot
+var homeJade = jade.compileFile(viewPathOf('home'));
+var detailsJade = jade.compileFile(viewPathOf('details'));
 var recsJade = {
-    news: jade.compileFile('./views/news.jade'),
-    mtin: jade.compileFile('./views/mtin.jade'),
-    data: jade.compileFile('./views/data.jade'),
-    refe: jade.compileFile('./views/refe.jade')
+    news: jade.compileFile(viewPathOf('news')),
+    mtin: jade.compileFile(viewPathOf('mtin')),
+    data: jade.compileFile(viewPathOf('data')),
+    refe: jade.compileFile(viewPathOf('refe'))
 };
-var staffJade = jade.compileFile('./views/staff.jade');
-var aboutJade = jade.compileFile('./views/about.jade');
-var uploadJade = jade.compileFile('./views/upload.jade');
+var staffJade = jade.compileFile(viewPathOf('staff'));
+var aboutJade = jade.compileFile(viewPathOf('about'));
+var uploadJade = jade.compileFile(viewPathOf('upload'));
 
 var winston = require('winston'); //winston.js to log info and error
 winston.add(winston.transports.File, {
-    filename: 'public/logs.log',
+    filename: __dirname + '/../public/logs.log',
     handleExceptions: true,
     humanReadableUnhandledException: true
 });
@@ -59,7 +62,7 @@ router.use(function(req, res, next) {
  * middleware function to check if it's a ajax req
  */
 router.use(function(req, res, next) {
-    if (!req.headers['x-requested-with']) {
+    if (!req.headers['x-requested-with'] && req.method == 'GET') {
         var reqUrl = req.originalUrl;
         var html = layoutJade({
             initUrl: reqUrl === '/' ? null : reqUrl
@@ -76,7 +79,7 @@ router.get('/', function(req, res) {
 })
 
 function saveFile(req, res, ftype) {
-    var uDir = './public/' + ftype;
+    var uDir = __dirname + '/../public/' + ftype;
     var form = new formidable.IncomingForm({
         uploadDir: uDir
     });
@@ -260,11 +263,9 @@ MongoClient.connectAsync(url).then(function(db) {
          * [simply get the data from mongodb and render the view of the about page]
          */
         router.get('/about', function(req, res) {
-            fs.readFile('./public/about.md', 'utf8', (err, data) => {
+            fs.readFile(__dirname + '/../public/about.md', 'utf8', (err, data) => {
                 if (err) console.log(err);
-                console.log(data);
                 html = md.render(data);
-                console.log(html);
                 res.send(html);
             })
         });
@@ -283,23 +284,24 @@ MongoClient.connectAsync(url).then(function(db) {
                 owner: user
             }).then(function(doc) { //found ? delete record and file : return
                 posts.deleteOneAsync({ //delete from mongodb
-                    _id: id,
-                    owner: user
-                }).then(function(result) {
-                    winston.info('deleted:' + result);
-                    res.json({
-                        result: true
-                    });
-                }).then(function() {
-                    var cdir = ''; //remove the directory consists the related files.
-                    if (doc.img && doc.img[0]) {
-                        cdir = '../' + doc.img[0].src.substring(0, doc.img[0].src.lastIndexOf('/'));
-                        fs.remove(cdir);
-                    } else if (doc.att && doc.att[0]) {
-                        cdir = '../' + doc.att[0].substring(0, doc.att[0].lastIndexOf('/'));
-                        fs.remove(cdir);
-                    }
-                })
+                        _id: id,
+                        owner: user
+                    }).then(function(result) {
+                        winston.info('deleted:' + result);
+                        res.json({
+                            result: true
+                        });
+                    })
+                    /*.then(function() {
+                        var cdir = ''; //remove the directory consists the related files.
+                        if (doc.img && doc.img[0]) {
+                            cdir = './public' + doc.img[0].src.substring(0, doc.img[0].src.lastIndexOf('/'));
+                            fs.remove(cdir);
+                        } else if (doc.att && doc.att[0]) {
+                            cdir = '../' + doc.att[0].substring(0, doc.att[0].lastIndexOf('/'));
+                            fs.remove(cdir);
+                        }
+                    })*/
             }).catch(function(err) {
                 res.json({
                     result: false

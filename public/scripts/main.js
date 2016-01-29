@@ -8,7 +8,7 @@ $(document).ready(function() {
     }
     $(document).scroll(controlNavPosition);
     $('#scroll-top').click(ScrollTop);
-})
+});
 var downloads = function() {
     var dLinks = [];
     return {
@@ -18,11 +18,11 @@ var downloads = function() {
                     linkid: this.id,
                     href: $(this).attr('href'),
                     download: $(this).attr('download')
-                })
+                });
                 $(this).removeAttr('href');
                 $(this).removeAttr('download');
                 $(this).click(showLogin);
-            })
+            });
         },
         allowDownload: function() {
             $('.downloadlink').unbind('click', showLogin);
@@ -31,9 +31,9 @@ var downloads = function() {
                     'href': '../../' + dLinks[i].href,
                     'download': dLinks[i].download
                 });
-            };
+            }
         }
-    }
+    };
 }();
 function loadContent(url) {
     $('#body-loader').show();
@@ -73,7 +73,6 @@ function setLogin() {
 function showLogin() {
     $('#ldlog').modal('show');
 }
-
 function setUser(username) {
     $('#login_entry').css('display', 'none');
     $('#upload_entry').css('display', 'inline-block').click(function() {
@@ -135,7 +134,6 @@ function setDelete() {
         })
     }
 }
-
 
 function loginSubmit() {
     var userinfo = {
@@ -307,7 +305,6 @@ var myUpload = function() {
         })
         loadContent('/home');
     }
-
     function computProgress(oEvent) {
         var percentComplete = Math.ceil(1000 * oEvent.loaded / oEvent.total) / 10 + '%';
         return percentComplete;
@@ -319,19 +316,19 @@ var myUpload = function() {
         this.source = '';
         this.path = '';
         this.progress = '0%';
-        this.updateProgress = (oEvent) => {
+        this.updateProgress = function(oEvent)  {
             this.progress = computProgress(oEvent);
         };
         var fileUploadReq = new XMLHttpRequest();
         fileUploadReq.withCredentials = false;
         fileUploadReq.open('POST', '/files');
 
-        fileUploadReq.onload = () => {
+        fileUploadReq.onload = function() {
             var json = JSON.parse(fileUploadReq.responseText);
             this.path = json.location;
         };
         fileUploadReq.upload.addEventListener("progress", this.updateProgress, false);
-        this.uploadFile = (ele) => {
+        this.uploadFile = function(ele)  {
             this.name = ele.files[0].name;
             var form = $(ele).parent('.frmfile')[0];
             var formData = new FormData(form);

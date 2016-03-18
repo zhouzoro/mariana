@@ -229,10 +229,8 @@ MongoClient.connectAsync(url).then(function(db) {
         router.get('/details?', function(req, res) {
             var getId = function() {
                 try {
-                    console.log(require('mongodb').ObjectID(req.query._id));
                     return require('mongodb').ObjectID(req.query._id)
                 } catch (err) {
-                    console.log(err);
                     return require('mongodb').ObjectID(req.query._id.substr(1, 24))
                 }
             }
@@ -370,8 +368,9 @@ MongoClient.connectAsync(url).then(function(db) {
 
 function GetCurrentDate() {
     var cdate = new Date();
+    var month = cdate.getMonth() < 9 ? ('0' + (cdate.getMonth() + 1)) : (cdate.getMonth() + 1)
     var currentDate = cdate.getFullYear() + "-" +
-        (cdate.getMonth() + 1) + "-" +
+        month + "-" +
         cdate.getDate();
     return currentDate;
 }

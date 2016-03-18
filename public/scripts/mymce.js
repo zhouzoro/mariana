@@ -192,7 +192,7 @@ function getQuoteText(htmlStr) {
                 images_upload_url: '/images',
                 content_css: '/app.min.css',
                 min_width: 420,
-                max_width: 960
+                max_height: 960
             });
             vue = new Vue({
                 el: '#app',

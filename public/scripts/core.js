@@ -30,7 +30,7 @@ var downloads = function() {
             $('.downloadlink').unbind('click', showLogin);
             for (var i = 0; i < dLinks.length; i++) {
                 $('#' + dLinks[i].linkid).attr({
-                    'href': '../../' + dLinks[i].href,
+                    'href': dLinks[i].href,
                     'download': dLinks[i].download
                 });
             };
